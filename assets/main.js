@@ -67,10 +67,10 @@ Vue.createApp({
     watch(current, (newVal) => {
       if (newVal === result.value) {
         setTimeout(() => {
-          alert('恭喜你完成了推导！奖励 500 积分。')
+          alert('恭喜你完成了推导！奖励 365 积分。')
           current.value = '';
         }, 500);
-        cost.value += 500;
+        cost.value += 365;
       }
     });
 
