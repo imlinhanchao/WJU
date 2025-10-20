@@ -7,12 +7,23 @@ body, html {
   font: 14px "Chill Pixels Mono", "Pixel32", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 h1 {
-  font-size: 2em;
+  font-size: 2.5em;
+  font-weight: bold;
 }
-.help code {
+h2 {
+  font-size: 2em;
+  font-weight: bold;
+}
+h3 {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+code {
   font-family: inherit;
   display: inline-block;
   padding: 0.1em 0.3em;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 0.3em;
+  margin: 0 0.1em;
+  color: #ededed;
 }
