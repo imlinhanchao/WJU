@@ -54,7 +54,7 @@
           @click="lessU" 
           class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
           :disabled="!canLessU">
-          UU => J
+          UUU => J
         </button>
       </section>
       <section v-if="current" class="whitespace-pre-wrap w-full text-center px-5 break-all">
@@ -104,7 +104,7 @@
             <b class="text-yellow-500">+U</b>、
             <b class="text-blue-500">Wx => Wxx</b>、
             <b class="text-red-500">JJJ => U</b> 和 
-            <b class="text-purple-500">UU => J</b>，
+            <b class="text-purple-500">UUU => J</b>，
           都有其可执行的条件，具体如下：
           </p>
           <ul class="px-5 py-3 list-disc list-outside space-y-1">
@@ -112,7 +112,7 @@
             <li><code class="text-yellow-500">+U</code>：结尾不是 <code>UUU</code> 时可用，执行后在字符串末尾添加一个 <code>U</code>。</li>
             <li><code class="text-blue-500">Wx => Wxx</code>：始终可用，执行后将字符串翻倍（例如 <code>WJU</code> 变为 <code>WJUJU</code>）。</li>
             <li><code class="text-red-500">JJJ => U</code>：当字符串中包含 <code>JJJ</code> 时可用，执行后将 <code>JJJ</code> 替换为 <code>U</code>。</li>
-            <li><code class="text-purple-500">UU => J</code>：当字符串中包含 <code>UU</code> 时可用，执行后将 <code>UU</code> 替换为 <code>J</code>。</li>
+            <li><code class="text-purple-500">UUU => J</code>：当字符串中包含 <code>UUU</code> 时可用，执行后将 <code>UUU</code> 替换为 <code>J</code>。</li>
           </ul>
           <p>完成推导将会奖励 <code>250 积分</code>，撤回操作将会消耗 <code>10 积分</code>。</p>
         </section>

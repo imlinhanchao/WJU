@@ -24,7 +24,7 @@ class GameCore {
   }
 
   static lessU(text) {
-    return text.replace(/UU/g, 'J')
+    return text.replace(/UUU/g, 'J')
   }
 
   static canUse(text) {
@@ -33,7 +33,7 @@ class GameCore {
     if (!text.endsWith('UUU') && (!text.endsWith('UJ') || GameCore.random(2) == 1)) fns.push(GameCore.addU);
     if (!text.endsWith('JJ') && (!text.endsWith('JU') || GameCore.random(2) == 1)) fns.push(GameCore.addJ);
     if (text.includes('JJJ')) fns.push(GameCore.lessJ);
-    if (text.includes('UU')) fns.push(GameCore.lessU);
+    if (text.includes('UUU')) fns.push(GameCore.lessU);
     return fns;
   }
 

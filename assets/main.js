@@ -62,7 +62,7 @@ Vue.createApp({
     const canAddJ = computed(() => !current.value.endsWith('JJ'));
     const canAddU = computed(() => !current.value.endsWith('UUU'));
     const canLessJ = computed(() => current.value.includes('JJJ'));
-    const canLessU = computed(() => current.value.includes('UU'));
+    const canLessU = computed(() => current.value.includes('UUU'));
 
     watch(current, (newVal) => {
       if (newVal === result.value) {
