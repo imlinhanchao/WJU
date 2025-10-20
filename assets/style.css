@@ -1,0 +1,18 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #181a1b;
+  color: #fff;
+  font: 14px "Chill Pixels Mono", "Pixel32", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+h1 {
+  font-size: 2em;
+}
+.help code {
+  font-family: inherit;
+  display: inline-block;
+  padding: 0.1em 0.3em;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.3em;
+}
