@@ -1,0 +1,215 @@
+.wju-loading {
+  display: flex;
+  align-items: center;
+  font-size: 2.5rem;
+}
+
+.wju-loading span {
+  display: inline-block;
+  animation: wju-bounce 1.2s infinite;
+}
+
+.wju-loading .wju1 { animation-delay: 0s; }
+.wju-loading .wju2 { animation-delay: 0.12s; }
+.wju-loading .wju3 { animation-delay: 0.24s; }
+.wju-loading .dot1 { animation-delay: 0.36s; }
+.wju-loading .dot2 { animation-delay: 0.48s; }
+.wju-loading .dot3 { animation-delay: 0.6s; }
+
+@keyframes wju-bounce {
+  0%, 100% { transform: translateY(0); }
+  10% { transform: translateY(-30%); }
+  20% { transform: translateY(0); }
+  60% { transform: translateY(0); }
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+:root {
+  --bg-color: #eeeeee;
+  --dialog-bg-color: #dddddddd;
+  --text-color: #181a1b;
+  --code-bg-color: rgba(0, 0, 0, 0.1);
+  --code-text-color: #131415;
+  --btn-color: #000;
+  --action-1-color: #0e9e6c;
+  --action-2-color: #d97706;
+  --action-3-color: #2563eb;
+  --action-4-color: #dc2626;
+  --action-5-color: #7c3aed;
+  --action-1-hover-color: #10b981;
+  --action-2-hover-color: #f59e0b;
+  --action-3-hover-color: #3b82f6;
+  --action-4-hover-color: #ef4444;
+  --action-5-hover-color: #8b5cf6;
+  --action-text-color: #fff;
+  --btn-disabled-color: #777777;
+  --btn-disabled-bg-color: #cccccc;
+}
+
+.dark {
+  --bg-color: #181a1b;
+  --dialog-bg-color: #202324dd;
+  --text-color: #fff;
+  --code-bg-color: rgba(255, 255, 255, 0.1);
+  --code-text-color: #ededed;
+  --btn-color: #fff;
+  --action-1-color: #10b981;
+  --action-2-color: #f59e0b;
+  --action-3-color: #3b82f6;
+  --action-4-color: #ef4444;
+  --action-5-color: #8b5cf6;
+  --action-1-hover-color: #0e9e6c;
+  --action-2-hover-color: #d97706;
+  --action-3-hover-color: #2563eb;
+  --action-4-hover-color: #dc2626;
+  --action-5-hover-color: #7c3aed;
+  --action-text-color: #fff;
+  --btn-disabled-color: #aaaaaa;
+  --btn-disabled-bg-color: #555555;
+}
+
+.bg-primary {
+  background-color: var(--dialog-bg-color);
+}
+.bg-action-1 {
+  background-color: var(--action-1-color);
+  color: var(--action-text-color);
+}
+.bg-action-2 {
+  background-color: var(--action-2-color);
+  color: var(--action-text-color);
+}
+.bg-action-3 {
+  background-color: var(--action-3-color);
+  color: var(--action-text-color);
+}
+.bg-action-4 {
+  background-color: var(--action-4-color);
+  color: var(--action-text-color);
+}
+.bg-action-5 {
+  background-color: var(--action-5-color);
+  color: var(--action-text-color);
+}
+.bg-action-1:hover {
+  background-color: var(--action-1-hover-color);
+}
+.bg-action-2:hover {
+  background-color: var(--action-2-hover-color);
+}
+.bg-action-3:hover {
+  background-color: var(--action-3-hover-color);
+}
+.bg-action-4:hover {
+  background-color: var(--action-4-hover-color);
+}
+.bg-action-5:hover {
+  background-color: var(--action-5-hover-color);
+}
+button {
+  color: var(--btn-color);
+}
+button:disabled {
+  color: var(--btn-disabled-color);
+  background-color: var(--btn-disabled-bg-color);
+  cursor: not-allowed;
+}
+button.text {
+  background-color: transparent;
+  color: var(--btn-color);
+}
+body, html, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font: 14px "Chill Pixels Mono", "Pixel32", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+}
+h2 {
+  font-size: 2em;
+  font-weight: bold;
+}
+h3 {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+code {
+  font-family: inherit;
+  display: inline-block;
+  padding: 0.1em 0.3em;
+  background-color: var(--code-bg-color);
+  border-radius: 0.3em;
+  margin: 0 0.1em;
+  color: var(--code-text-color);
+}
+
+.form {
+  border-radius: 8px;
+  width: 100%;
+  padding: 20px;
+  max-width: 350px;
+}
+
+.form h1, .form h2 {
+  margin-bottom: 20px;
+  display: inline-block;
+  border-bottom: 5px solid var(--primary-color);
+}
+
+.form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text-color);
+  width: 6em;
+  min-width: 6em;
+  text-align: right;
+  padding-right: 1em;
+  white-space: nowrap;
+}
+
+.form input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form p {
+  display: flex;
+  text-align: center;
+  flex-direction: row;
+  align-items: center;
+}
+
+.game-section {
+  display: none;
+}
+.game-section.flex {
+  display: flex;
+}
+
+.error {
+  --message-primary-color: #dc3545;
+  --message-primary-bg-color: #f8d7da;
+  border: 1px solid var(--message-primary-color);
+  color: var(--message-primary-color);
+  background-color: var(--message-primary-bg-color);
+  border-radius: 5px;
+  padding: 5px;
+  display: inline-block;
+  margin: 5px auto;
+}

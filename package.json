@@ -1,0 +1,41 @@
+{
+  "name": "wju",
+  "version": "1.0.0",
+  "description": "WJU Derivation Game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imlinhanchao/WJU.git"
+  },
+  "keywords": [
+    "WJU"
+  ],
+  "author": "Hancel.Lin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imlinhanchao/WJU/issues"
+  },
+  "homepage": "https://github.com/imlinhanchao/WJU#readme",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "fishpi": "^0.1.4",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.2.2",
+    "session-file-store": "^1.5.0",
+    "typeorm": "^0.3.27"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/node": "^24.9.1",
+    "@types/session-file-store": "^1.2.5",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

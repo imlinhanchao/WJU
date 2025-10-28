@@ -1,0 +1,43 @@
+
+      <footer class="text-center space-y-2 py-5 opacity-30">
+        <% if (!['config', 'register', 'login', 'profile'].includes(locals.name)){ -%>
+        <div id="userinfo">
+            <a href="javascript:void(0)" @click="help = !help">帮助?</a> |
+        <% if(!locals.user){ -%>
+            <a href="/login/fishpi" id="login">摸鱼派登录</a>
+        <% }else{ -%>
+            @<a title="个人资料" href="/u/<%= user.username %>"><%= user.nickname || user.username %></a>
+            <% } -%>
+        </div>
+        <% } -%>
+        <p>&copy; <%= new Date().getFullYear() -%> <a href="https://github.com/imlinhanchao/WJU" target="_blank">WJU Derivation</a>. All rights reserved.</p>
+      </footer>
+    </section>
+    <section class="loading" v-if="false">
+      <div class="wju-loading">
+        <span class="wju1">W</span>
+        <span class="wju2">J</span>
+        <span class="wju3">U</span>
+        <span class="dot1">.</span>
+        <span class="dot2">.</span>
+        <span class="dot3">.</span>
+      </div>
+    </section>
+  </article>
+  <% if (locals.name === 'index') { -%>
+  <script>
+    window.gamData = {
+      matchText: '<%= locals.matchText %>',
+      current: '<%= locals.current %>',
+      history: <%- JSON.stringify(locals.history || []) %>,
+    };
+    window.player = <%- JSON.stringify(locals.user || null) %>;
+  </script>
+  <% } -%>
+</body>
+<script>initDarkMode();</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="assets/vue.min.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/main.js"></script>
+</html>

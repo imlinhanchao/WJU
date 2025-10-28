@@ -8,121 +8,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WJU Derivation</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdn.time-pack.com/fonts/fonts.css">
-  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.5.20/vue.global.prod.js"></script>
 </head>
 <body>
   <article id="app" class="flex flex-col h-full">
-    <header class="text-center py-5">
-      <h1>WJU Derivation</h1>
-      <sub class="text-sm">{{ cost }} points</sub>
-    </header>
-    <main class="flex-1 flex flex-col justify-center items-center">
-      <section v-if="current">
-        <span class="text-[5em]" v-for="(t, i) in current.split('')" :key="t + i">{{ t }}</span>
-      </section>
-      <section v-if="!current">
-        <button @click="startGame" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          开始游戏 (100 points)
-        </button>
-      </section>
-      <section v-else class="space-x-1">
-        <button 
-          @click="addJ" 
-          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed" 
-          :disabled="!canAddJ">
-          + J
-        </button>
-        <button 
-          @click="addU" 
-          class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed" 
-          :disabled="!canAddU">
-          + U
-        </button>
-        <button
-          @click="double" 
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed">
-          Wx => Wxx
-        </button>
-        <button
-          @click="lessJ" 
-          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed" 
-          :disabled="!canLessJ">
-          JJJ => U
-        </button>
-        <button
-          @click="lessU" 
-          class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
-          :disabled="!canLessU">
-          UUU => J
-        </button>
-      </section>
-      <section v-if="current" class="whitespace-pre-wrap w-full text-center px-5 break-all">
-        <span 
-          class="text-[3em]" 
-          :class="{ 'text-blue-500': t != '_', 'text-gray-500': t == '_' }" 
-          v-for="(t, i) in matchText.split('')" 
-          :key="t + i">
-          {{ t }}
-        </span>
-      </section>
-      <section v-if="current" class="flex items-center justify-center">
-        <button 
-          @click="revoke" 
-          title="撤回操作"
-          :disabled="!history.length"
-          class="disabled:text-gray-500 text-white font-bold py-2 px-4 rounded m-2 font-mono disabled:cursor-not-allowed">
-          ↩ (10 points)
-        </button>
-        <button 
-          @click="startGame" 
-          title="重新开始"
-          class="disabled:text-gray-500 text-white font-bold py-2 px-4 rounded m-2 font-mono">
-          ↻ (100 points)
-        </button>
-      </section>
-      <section v-if="help" class="fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
-        <section class="help flex flex-col p-5 bg-black text-gray-400 bg-opacity-90 rounded-lg shadow-light-100 shadow-lg max-w-[700px] w-full max-h-[95vh] space-y-2">
-          <h2 class="text-lg font-bold text-center relative pb-5">
-            <span class="font-bold text-lg">How to Play</span>
-            <button class="absolute right-0" @click="help = false">X</button>
-          </h2>
-          <p class="text-lg text-gray-300">
-            <b>通过五种不同的字符串操作，使得<code class="text-white">白色</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
-          </p>
-          <p>
-            比如，当前字符串是 <code class="text-white">WJU</code>，目标字符串是 <code class="text-blue-500">WJUJUJ</code>，
-            那么你可以先点击 <code class="text-blue-500">Wx => Wxx</code> 按钮将字符串翻倍得到 <code class="text-white">WJUJU</code>，
-            然后再点击 <code class="text-green-500">+J</code> 按钮在末尾添加一个 <code class="text-white">J</code>，最终得到目标字符串 <code class="text-white">WJUJUJ</code>。
-          </p>
-          <p>
-            不过，<code class="text-blue-500">目标字符串</code>并不会直接在一开始就完整呈现，只有<code class="text-white">当前字符串</code>依次能匹配上的字母，才会显示。
-            其余则会显示为下划线 <code class="text-gray-500">_</code>。
-          </p>
-          <p>字符串的五种操作：
-            <b class="text-green-500">+J</b>、
-            <b class="text-yellow-500">+U</b>、
-            <b class="text-blue-500">Wx => Wxx</b>、
-            <b class="text-red-500">JJJ => U</b> 和 
-            <b class="text-purple-500">UUU => J</b>，
-          都有其可执行的条件，具体如下：
-          </p>
-          <ul class="px-5 py-3 list-disc list-outside space-y-1">
-            <li><code class="text-green-500">+J</code>：结尾不是 <code>JJ</code> 时可用，执行后在字符串末尾添加一个 <code>J</code>。</li>
-            <li><code class="text-yellow-500">+U</code>：结尾不是 <code>UUU</code> 时可用，执行后在字符串末尾添加一个 <code>U</code>。</li>
-            <li><code class="text-blue-500">Wx => Wxx</code>：始终可用，执行后将字符串翻倍（例如 <code>WJU</code> 变为 <code>WJUJU</code>）。</li>
-            <li><code class="text-red-500">JJJ => U</code>：当字符串中包含 <code>JJJ</code> 时可用，执行后将 <code>JJJ</code> 替换为 <code>U</code>。</li>
-            <li><code class="text-purple-500">UUU => J</code>：当字符串中包含 <code>UUU</code> 时可用，执行后将 <code>UUU</code> 替换为 <code>J</code>。</li>
-          </ul>
-          <p>完成推导将会奖励 <code>365 积分</code>，撤回操作将会消耗 <code>10 积分</code>。</p>
+    <section class="flex-col h-full hidden" :class="{ '!flex': true }">
+      <header class="text-center py-5">
+        <h1>WJU Derivation</h1>
+        <sub class="text-sm">{{ cost }} points</sub>
+      </header>
+      <main class="flex-1 flex flex-col justify-center items-center">
+        <section v-if="current">
+          <span class="text-[5em]" v-for="(t, i) in current.split('')" :key="t + i">{{ t }}</span>
         </section>
-      </section>
-    </main>
-    <footer class="text-center space-y-2 py-5">
-      <p><a href="javascript:void(0)" @click="help = !help">Need help?</a></p>
-      <p class="text-center">© 2025 WJU Derivation. All rights reserved.</p>
-    </footer>
+        <section v-if="!current">
+          <button @click="startGame" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            开始游戏 (100 points)
+          </button>
+        </section>
+        <section v-else class="space-x-1">
+          <button 
+            @click="addJ" 
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed" 
+            :disabled="!canAddJ">
+            + J
+          </button>
+          <button 
+            @click="addU" 
+            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed" 
+            :disabled="!canAddU">
+            + U
+          </button>
+          <button
+            @click="double" 
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed">
+            Wx => Wxx
+          </button>
+          <button
+            @click="lessJ" 
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed" 
+            :disabled="!canLessJ">
+            JJJ => U
+          </button>
+          <button
+            @click="lessU" 
+            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
+            :disabled="!canLessU">
+            UUU => J
+          </button>
+        </section>
+        <section v-if="current" class="whitespace-pre-wrap w-full text-center px-5 break-all">
+          <span 
+            class="text-[3em]" 
+            :class="{ 'text-blue-500': t != '_', 'text-gray-500': t == '_' }" 
+            v-for="(t, i) in matchText.split('')" 
+            :key="t + i">
+            {{ t }}
+          </span>
+        </section>
+        <section v-if="current" class="flex items-center justify-center">
+          <button 
+            @click="revoke" 
+            title="撤回操作"
+            :disabled="!history.length"
+            class="disabled:text-gray-500 text-white font-bold py-2 px-4 rounded m-2 font-mono disabled:cursor-not-allowed">
+            ↩ (10 points)
+          </button>
+          <button 
+            @click="startGame" 
+            title="重新开始"
+            class="disabled:text-gray-500 text-white font-bold py-2 px-4 rounded m-2 font-mono">
+            ↻ (100 points)
+          </button>
+        </section>
+        <section v-if="help" class="fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
+          <section class="help flex flex-col p-5 bg-black text-gray-400 bg-opacity-90 rounded-lg shadow-light-100 shadow-lg max-w-[700px] w-full max-h-[95vh] space-y-2">
+            <h2 class="text-lg font-bold text-center relative pb-5">
+              <span class="font-bold text-lg">How to Play</span>
+              <button class="absolute right-0" @click="help = false">X</button>
+            </h2>
+            <p class="text-lg text-gray-300">
+              <b>通过五种不同的字符串操作，使得<code class="text-white">白色</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
+            </p>
+            <p>
+              比如，当前字符串是 <code class="text-white">WJU</code>，目标字符串是 <code class="text-blue-500">WJUJUJ</code>，
+              那么你可以先点击 <code class="text-blue-500">Wx => Wxx</code> 按钮将字符串翻倍得到 <code class="text-white">WJUJU</code>，
+              然后再点击 <code class="text-green-500">+J</code> 按钮在末尾添加一个 <code class="text-white">J</code>，最终得到目标字符串 <code class="text-white">WJUJUJ</code>。
+            </p>
+            <p>
+              不过，<code class="text-blue-500">目标字符串</code>并不会直接在一开始就完整呈现，只有<code class="text-white">当前字符串</code>依次能匹配上的字母，才会显示。
+              其余则会显示为下划线 <code class="text-gray-500">_</code>。
+            </p>
+            <p>字符串的五种操作：
+              <b class="text-green-500">+J</b>、
+              <b class="text-yellow-500">+U</b>、
+              <b class="text-blue-500">Wx => Wxx</b>、
+              <b class="text-red-500">JJJ => U</b> 和 
+              <b class="text-purple-500">UUU => J</b>，
+            都有其可执行的条件，具体如下：
+            </p>
+            <ul class="px-5 py-3 list-disc list-outside space-y-1">
+              <li><code class="text-green-500">+J</code>：结尾不是 <code>JJ</code> 时可用，执行后在字符串末尾添加一个 <code>J</code>。</li>
+              <li><code class="text-yellow-500">+U</code>：结尾不是 <code>UUU</code> 时可用，执行后在字符串末尾添加一个 <code>U</code>。</li>
+              <li><code class="text-blue-500">Wx => Wxx</code>：始终可用，执行后将字符串翻倍（例如 <code>WJU</code> 变为 <code>WJUJU</code>）。</li>
+              <li><code class="text-red-500">JJJ => U</code>：当字符串中包含 <code>JJJ</code> 时可用，执行后将 <code>JJJ</code> 替换为 <code>U</code>。</li>
+              <li><code class="text-purple-500">UUU => J</code>：当字符串中包含 <code>UUU</code> 时可用，执行后将 <code>UUU</code> 替换为 <code>J</code>。</li>
+            </ul>
+            <p>完成推导将会奖励 <code>365 积分</code>，撤回操作将会消耗 <code>10 积分</code>。</p>
+          </section>
+        </section>
+      </main>
+      <footer class="text-center space-y-2 py-5">
+        <p><a href="javascript:void(0)" @click="help = !help">Need help?</a></p>
+        <p class="text-center">© 2025 WJU Derivation. All rights reserved.</p>
+      </footer>
+    </section>
+    <section class="flex items-center justify-center h-full w-full" v-if="false">
+      <div class="wju-loading">
+        <span class="wju1">W</span>
+        <span class="wju2">J</span>
+        <span class="wju3">U</span>
+        <span class="dot1">.</span>
+        <span class="dot2">.</span>
+        <span class="dot3">.</span>
+      </div>
+    </section>
   </article>
+  <link rel="stylesheet" href="https://cdn.time-pack.com/fonts/fonts.css">
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.5.20/vue.global.prod.js"></script>
   <link rel="stylesheet" href="assets/style.css?ver=0.02" />
   <script src="assets/core.js?ver=0.02"></script>
   <script src="assets/main.js?ver=0.02"></script>

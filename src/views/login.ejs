@@ -1,0 +1,15 @@
+<%- include('header') %>
+  <section class="form space-y-2">
+    <button
+      class="border-dashed border-4 border-[#f0d263] flex items-center justify-center px-3 py-5 cursor-pointer rounded-lg font-bold shadow-lg shadow-[#ec8e33aa] space-x-2"
+      onclick="location = 'login/fishpi'">
+      <img src="images/fishpi.svg" />
+      <span>摸鱼派登录</span>
+    </button>
+    <% if (locals.message){ -%>
+      <p class="<%= type -%> message">
+        <%= message -%>
+      </p>
+    <% } -%>
+  </section>
+<%- include('footer') %>
