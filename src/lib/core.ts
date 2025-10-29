@@ -217,7 +217,7 @@ export default class GameCore {
     });
     await GameRepo.save(newGame);
     this.options = newGameData;
-    this.setUserPoint(userId, 100);
+    this.setUserPoint(userId, -100);
 
     return json(res, {
       ...newGameData,
