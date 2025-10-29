@@ -16,14 +16,14 @@ function initDarkMode(darkMode = localStorage.getItem('vueuse-color-scheme') || 
   }
 }
 
-function toggleDarkMode() {
+function toggleDarkMode(darkMode) {
   const body = document.body;
   // light / dark / auto
-  if (darkMode.value === 'dark') {
+  if (darkMode === 'dark') {
     body.classList.remove('dark');
     localStorage.setItem('vueuse-color-scheme', isDarkModeInSystem ? 'light' : 'auto');
     return 'light';
-  } else if (darkMode.value === 'light') {
+  } else if (darkMode === 'light') {
     body.classList.add('dark');
     localStorage.setItem('vueuse-color-scheme', !isDarkModeInSystem ? 'dark' : 'auto');
     return 'dark';

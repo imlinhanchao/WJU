@@ -3,8 +3,8 @@ Vue.createApp({
     const { ref, computed, watch, onMounted } = Vue;
     const error = ref('');
     const current = ref(window.gamData?.current || '');
-    const target = ref('');
-    const match = ref('');
+    const target = ref(window.gamData?.target);
+    const match = ref(window.gamData?.matchText || '');
     const history = ref(window.gamData?.history || []);
     async function startGame() {
       const { source: begin, target: end, matchText } = await GameCore.start();
@@ -105,7 +105,7 @@ Vue.createApp({
     const darkMode = ref(localStorage.getItem('vueuse-color-scheme') || 'auto');
 
     function switchDarkMode() {
-      darkMode.value = toggleDarkMode();
+      darkMode.value = toggleDarkMode(darkMode.value);
     }
 
     const isDark = computed(() => {

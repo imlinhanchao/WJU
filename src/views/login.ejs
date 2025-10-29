@@ -1,18 +1,14 @@
 <%- include('header') %>
   <section class="space-y-2 w-full flex justify-center items-center h-full space-y-2 flex-col">
-    <button
-      class="w-[12em] border-dashed hover:border-2 border-[#ec8e33] bg-[#f0d263] inline-flex items-center justify-center px-3 py-1 cursor-pointer rounded-lg font-bold shadow shadow-[#ec8e33aa] space-x-2 text-black"
-      onclick="location = 'login/fishpi'">
-      <img src="images/fishpi.svg" class="w-[1.5em]" />
-      <span>摸鱼派登录</span>
-    </button>
-    <% if (locals.config.login.githubClientId && locals.config.login.githubClientSecret) { -%>
-    <button
-      class="w-[12em] border-dashed hover:border-2 border-[#aaa] inline-flex items-center justify-center px-3 py-1 cursor-pointer rounded-lg font-bold shadow shadow-[#aaaa] space-x-2"
-      onclick="location = 'login/github'">
-      <img src="images/github.svg" class="w-[1.5em]" />
-      <span>GitHub 登录</span>
-    </button>
+    <section class="text-center w-full space-x-2">
+      <a href="login/fishpi" aria-label="使用摸鱼派账号登录" class="inline-block">
+        <img src="images/fishpi.svg" class="w-[3.5em]" />
+      </a>
+      <% if (locals.config.login.githubClientId && locals.config.login.githubClientSecret) { -%>
+      <a href="login/github" aria-label="使用 GitHub 账号登录" class="inline-block">
+        <img src="images/github.svg" class="w-[3.5em]" />
+      </a>
+    </section>
     <% } -%>
     <% if (locals.message){ -%>
       <p class="<%= type -%> message">

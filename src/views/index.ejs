@@ -1,5 +1,5 @@
 <%- include('header') %>
-      <main class="flex-1 flex flex-col justify-center items-center">
+      <main class="flex-1 flex flex-col justify-center items-center relative">
         <span v-if="error" class="error">{{ error }}</span>
         <section v-if="current">
           <span class="text-[5em]" v-for="(t, i) in current.split('')" :key="t + i">{{ t }}</span>
@@ -10,7 +10,36 @@
             <% if(locals.user){ -%><span>(100 points)</span><% } -%>
           </button>
         </section>
-        <section v-else class="space-x-1">
+        <section v-else class="text-4xl font-silk">
+          {{ current == matchText ? '==' : '!='}}
+        </section>
+        <section v-if="current" class="whitespace-pre-wrap w-full text-center px-5 break-all">
+          <span 
+            class="text-[3em]" 
+            :class="{ 'text-blue-500': t != '_', 'text-gray-500': t == '_' }" 
+            v-for="(t, i) in matchText.split('')" 
+            :key="t + i">
+            {{ t }}
+          </span>
+        </section>
+        <section v-if="current" class="flex items-center justify-center">
+          <button 
+            @click="revoke" 
+            aria-label="撤回操作"
+            :disabled="!history.length"
+            class="font-bold py-2 px-4 rounded m-2 font-mono text">
+            <span>↩</span>
+            <% if(locals.user){ -%><span>(10 points)</span><% } -%>
+          </button>
+          <button 
+            @click="startGame" 
+            aria-label="重新开始"
+            class="font-bold py-2 px-4 rounded m-2 font-mono text">
+            <span>↻</span>
+            <% if(locals.user){ -%><span>(100 points)</span><% } -%>
+          </button>
+        </section>
+        <section v-if="current" class="space-x-1 absolute bottom-[1em]">
           <button 
             @click="addJ" 
             class="bg-action-1 font-bold py-2 px-4 rounded" 
@@ -41,43 +70,18 @@
             UUU => J
           </button>
         </section>
-        <section v-if="current" class="whitespace-pre-wrap w-full text-center px-5 break-all">
-          <span 
-            class="text-[3em]" 
-            :class="{ 'text-blue-500': t != '_', 'text-gray-500': t == '_' }" 
-            v-for="(t, i) in matchText.split('')" 
-            :key="t + i">
-            {{ t }}
-          </span>
-        </section>
-        <section v-if="current" class="flex items-center justify-center">
-          <button 
-            @click="revoke" 
-            title="撤回操作"
-            :disabled="!history.length"
-            class="font-bold py-2 px-4 rounded m-2 font-mono text">
-            <span>↩</span>
-            <% if(locals.user){ -%><span>(10 points)</span><% } -%>
-          </button>
-          <button 
-            @click="startGame" 
-            title="重新开始"
-            class="font-bold py-2 px-4 rounded m-2 font-mono text">
-            <span>↻</span>
-            <% if(locals.user){ -%><span>(100 points)</span><% } -%>
-          </button>
-        </section>
         <section v-if="help" class="fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
           <section class="help flex flex-col p-5 bg-primary bg-opacity-90 rounded-lg shadow-light-100 dark:shadow-dark-100 shadow-lg max-w-[700px] w-full max-h-[95vh] space-y-2">
             <h2 class="text-lg font-bold text-center relative pb-5">
               <span class="font-bold text-lg">How to Play</span>
               <button class="absolute right-0" @click="help = false">X</button>
             </h2>
-            <p class="text-lg text-gray-300">
-              <b>通过五种不同的字符串操作，使得<code>白色</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
+            <p class="text-lg text-gray-300 border-b border-dashed border-gray-500 pb-1">
+              <span class="px-2 py-1 mr-1 rounded-md bg-action-3 text-sm align-middle">游戏目标</span>
+              <b class="align-middle">通过五种不同的字符串操作，使得<code>白色</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
             </p>
             <p>
-              比如，当前字符串是 <code>WJU</code>，目标字符串是 <code class="text-blue-500">WJUJUJ</code>，
+              例如，当前字符串是 <code>WJU</code>，目标字符串是 <code class="text-blue-500">WJUJUJ</code>，
               那么你可以先点击 <code class="text-blue-500">Wx => Wxx</code> 按钮将字符串翻倍得到 <code>WJUJU</code>，
               然后再点击 <code class="text-green-500">+J</code> 按钮在末尾添加一个 <code>J</code>，最终得到目标字符串 <code>WJUJUJ</code>。
             </p>

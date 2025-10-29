@@ -6,7 +6,7 @@
         <% if(!locals.user){ -%>
             <a href="/login" id="login">登录</a>
         <% }else{ -%>
-            @<a title="个人资料" href="/u/<%= user.username %>"><%= user.nickname || user.username %></a>
+            @<a title="个人资料" href="/u/<%= user.from %>/<%= user.username %>"><%= user.nickname || user.username %></a>
             <% } -%>
         </div>
         <% } -%>
@@ -28,6 +28,7 @@
   <script>
     window.gamData = {
       matchText: '<%= locals.matchText %>',
+      target: '<%= locals.target %>',
       current: '<%= locals.current %>',
       history: <%- JSON.stringify(locals.history || []) %>,
     };
