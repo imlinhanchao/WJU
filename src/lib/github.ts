@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { User, UserRepo } from "../entities";
 import utils from '../utils';
+import { saveUser } from './login';
 const clientId = utils.config?.login.githubClientId || '';
 
 export async function login(req: Request, res: Response) {
@@ -12,7 +12,7 @@ export async function login(req: Request, res: Response) {
       const userInfo = await getUserInfo(accessToken);
       req.session.user = {
         username: userInfo.login,
-        nickname: userInfo.name,
+        nickname: userInfo.name || userInfo.login,
         id: userInfo.id,
         lastLogin: Date.now(),
         from: 'github',
@@ -26,16 +26,6 @@ export async function login(req: Request, res: Response) {
     }
   }
   res.redirect(`https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=https%3A%2F%2F${domain}%2Flogin%2Fgithub&scope=user:email`);
-}
-
-async function saveUser(user: User) {
-  const existingUser = await UserRepo.findOne({ where: { username: user.username } });
-  if (!existingUser) {
-    await UserRepo.save(UserRepo.create(user));
-  } else {
-    UserRepo.merge(existingUser, user);
-    await UserRepo.save(existingUser);
-  }
 }
 
 function verify(req: Request) {

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User, UserRepo } from "../entities";
+import { saveUser } from './login';
 
 export async function login(req: Request, res: Response) {
   const domain = req.host;
@@ -23,16 +24,6 @@ export async function login(req: Request, res: Response) {
     }
   }
   res.redirect(`https://fishpi.cn/openid/login?openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.mode=checkid_setup&openid.return_to=https%3A%2F%2F${domain}%2Flogin%2Ffishpi&openid.realm=https%3A%2F%2F${domain}&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select`);
-}
-
-async function saveUser(user: User) {
-  const existingUser = await UserRepo.findOne({ where: { username: user.username } });
-  if (!existingUser) {
-    await UserRepo.save(UserRepo.create(user));
-  } else {
-    UserRepo.merge(existingUser, user);
-    await UserRepo.save(existingUser);
-  }
 }
 
 function verify(req: Request) {
