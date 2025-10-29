@@ -4,7 +4,7 @@
         <div id="userinfo">
             <a href="javascript:void(0)" @click="help = !help">帮助?</a> |
         <% if(!locals.user){ -%>
-            <a href="/login/fishpi" id="login">摸鱼派登录</a>
+            <a href="/login" id="login">登录</a>
         <% }else{ -%>
             @<a title="个人资料" href="/u/<%= user.username %>"><%= user.nickname || user.username %></a>
             <% } -%>
@@ -37,7 +37,7 @@
 </body>
 <script>initDarkMode();</script>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="assets/vue.min.js"></script>
-<script src="assets/core.js"></script>
-<script src="assets/main.js"></script>
+<script src="/assets/vue.min.js"></script>
+<script src="/assets/core.js"></script>
+<script src="/assets/main.js"></script>
 </html>

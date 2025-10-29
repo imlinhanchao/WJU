@@ -2,6 +2,7 @@ import { Router } from "express";
 import fs from "fs";
 import path from "path";
 import { render } from "../utils/route";
+import { IConfig } from "../../types/express-session";
 
 const randomStr = () => randomUp(Math.random().toString(36).slice(2));
 const randomUp = (s: string) => s.split('').map((s) => Math.floor(Math.random() * 10) % 2 ? s : s.toUpperCase()).join('');
@@ -15,7 +16,7 @@ router.get("/", (req, res) => {
 router.post("/", (req, res) => {
   const { webport, goldenKey, host, port, username, password, database, prefix } = req.body;
   
-  const config = {
+  const config: IConfig = {
     webport, secret: {
       identity: '_SESSION_ID_' + randomStr(),
       session: randomStr(),
@@ -23,6 +24,11 @@ router.post("/", (req, res) => {
     },
     database: {
       host, port, username, password, database, entityPrefix: prefix
+    },
+    login: {
+      githubClientId: req.body.githubClientId || '',
+      githubClientSecret: req.body.githubClientSecret || '',
+      steamApiKey: req.body.steamApiKey || '',
     }
   }
 

@@ -35,6 +35,19 @@
       <label for="prefix">表前缀:</label>
       <input type="text" id="prefix" name="prefix" required value="<%= locals.body?.prefix || '' -%>">
     </p>
+    <h2>第三方登录</h2>
+    <p>
+      <label for="githubClientId">GitHub Client ID:</label>
+      <input type="text" id="githubClientId" name="githubClientId" value="<%= locals.body?.githubClientId || '' -%>">
+    </p>
+    <p>
+      <label for="githubClientSecret">GitHub Client Secret:</label>
+      <input type="text" id="githubClientSecret" name="githubClientSecret" value="<%= locals.body?.githubClientSecret || '' -%>">
+    </p>
+    <p>
+      <label for="steamApiKey">Steam API Key:</label>
+      <input type="text" id="steamApiKey" name="steamApiKey" value="<%= locals.body?.steamApiKey || '' -%>">
+    </p>
     <button type="submit" class="bg-action-3 font-bold py-2 px-4 rounded w-full">配置</button>
     <% if (locals.message){ -%>
     <p class="<%= type -%> message"><%= message -%></p>

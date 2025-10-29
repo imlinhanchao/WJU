@@ -2,10 +2,10 @@ Vue.createApp({
   setup() {
     const { ref, computed, watch, onMounted } = Vue;
     const error = ref('');
-    const current = ref(window.gamData.current || '');
+    const current = ref(window.gamData?.current || '');
     const target = ref('');
     const match = ref('');
-    const history = ref(window.gamData.history || []);
+    const history = ref(window.gamData?.history || []);
     async function startGame() {
       const { source: begin, target: end, matchText } = await GameCore.start();
       console.log(`Game started: `, begin, '=>', end);
