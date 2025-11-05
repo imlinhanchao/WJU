@@ -38,7 +38,7 @@
   --code-bg-color: #eef0f2;
   --code-text-color: #131415;
   --btn-color: #000;
-  --disabled-color: #e3e9f4cc;
+  --disabled-color: #e3e9f4;
   --action-1-color: #00a96e;
   --action-2-color: #ff8600;
   --action-3-color: #0075c2;
@@ -56,12 +56,12 @@
 
 .dark {
   --bg-color: #191e24;
-  --dialog-bg-color: #202324dd;
+  --dialog-bg-color: #202324;
   --text-color: #fff;
   --code-bg-color: #2b3139;
   --code-text-color: #ededed;
   --btn-color: #fff;
-  --disabled-color: #848e9bcc;
+  --disabled-color: #848e9b;
   --action-1-color: #10b981;
   --action-2-color: #f59e0b;
   --action-3-color: #3b82f6;

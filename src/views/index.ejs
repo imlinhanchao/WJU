@@ -76,9 +76,9 @@
               <span class="font-bold text-lg">How to Play</span>
               <button class="absolute right-0" @click="help = false">X</button>
             </h2>
-            <p class="text-lg text-gray-300 border-b border-dashed border-gray-500 pb-1">
-              <span class="px-2 py-1 mr-1 rounded-md bg-action-3 text-sm align-middle">游戏目标</span>
-              <b class="align-middle">通过五种不同的字符串操作，使得<code>白色</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
+            <p class="text-lg border-b border-dashed border-gray-500 pb-1">
+              <span class="px-2 py-1 mr-1 rounded-md bg-action-3 align-middle">游戏目标</span>
+              <b class="align-middle">通过五种不同的字符串操作，使得<code>{{ isDark ? '白色' : '黑色' }}</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
             </p>
             <p>
               例如，当前字符串是 <code>WJU</code>，目标字符串是 <code class="text-blue-500">WJUJUJ</code>，
