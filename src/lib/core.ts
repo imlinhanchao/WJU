@@ -3,6 +3,8 @@ import { error, json, render } from '../utils/route';
 import { GameRepo, UserRepo } from '../entities';
 import { srand } from '../utils';
 import { Equal, MoreThan, Not } from 'typeorm';
+import { FingerTo } from 'fishpi';
+import utils from '../utils';
 
 export interface IGame {
   source: string;
@@ -136,7 +138,12 @@ export default class GameCore {
     });
   }
 
-  setUserPoint(userId: string, point: number) {
+  async setUserPoint(userId: string, point: number, memo?: string) {
+    const user = await UserRepo.findOne({ where: { id: userId } });
+    if (!user) return;
+    if (user.from == 'fishpi') {
+      FingerTo(utils.config.secret.goldenKey).editUserPoints(user.username, point, memo || 'WJU游戏奖励').catch(console.error);
+    }
     return UserRepo.update({ id: userId }, { point: () => `point + (${point})` });
   }
 
@@ -163,7 +170,7 @@ export default class GameCore {
       this.options = currentGame;
       if (currentGame.current === currentGame.target) {
         currentGame.earnedPoint = Math.floor(Math.random() * (365 - 168)) + 168;
-        this.setUserPoint(userId, currentGame.earnedPoint);
+        this.setUserPoint(userId, currentGame.earnedPoint, 'WJU游戏通关奖励');
       }
       await GameRepo.save(currentGame);
       return json(res, {
@@ -193,7 +200,7 @@ export default class GameCore {
     const lastText = currentGame.history.pop() as string;
     currentGame.current = lastText;
     this.options = currentGame;
-    this.setUserPoint(userId, -10);
+    this.setUserPoint(userId, -10, 'WJU游戏撤销操作扣除');
     await GameRepo.save(currentGame);
     return json(res, {
       current: currentGame.current,
@@ -217,7 +224,7 @@ export default class GameCore {
     });
     await GameRepo.save(newGame);
     this.options = newGameData;
-    this.setUserPoint(userId, -100);
+    this.setUserPoint(userId, -100, 'WJU游戏开局扣除');
 
     return json(res, {
       ...newGameData,

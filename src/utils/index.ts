@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from "path";
 import { isObject } from './is';
+import { IConfig } from '#/index';
 
 export function omit(obj: any, keys: string[]) {
   return Object.fromEntries(
@@ -14,11 +15,11 @@ export function pick(obj: any, keys: string[]) {
   );
 }
 
-let cfg: any = null
+let cfg: IConfig | null = null
 const configPath = path.join(__dirname, '..', 'config.json');
 
 export default {
-  get config(): any {
+  get config(): IConfig {
     if (!cfg && fs.existsSync(configPath)) {
       cfg = JSON.parse(fs.readFileSync(configPath).toString());
     }

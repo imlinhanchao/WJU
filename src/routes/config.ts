@@ -2,7 +2,7 @@ import { Router } from "express";
 import fs from "fs";
 import path from "path";
 import { render } from "../utils/route";
-import { IConfig } from "../../types/express-session";
+import { IConfig } from "../../types";
 
 const randomStr = () => randomUp(Math.random().toString(36).slice(2));
 const randomUp = (s: string) => s.split('').map((s) => Math.floor(Math.random() * 10) % 2 ? s : s.toUpperCase()).join('');
