@@ -4,7 +4,10 @@
   "description": "WJU Derivation Game",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf dist/",
+    "copy-files": "copyfiles -u 1 src/views/* src/public/* src/public/**/* dist/ && copyfiles package*.json dist/",
+    "build": "npm run clean && npm run admin:build && tsc --project tsconfig.json && npm run copy-files",
+    "start": "ts-node src/index.ts --files"
   },
   "repository": {
     "type": "git",
@@ -34,6 +37,7 @@
     "@types/express-session": "^1.18.2",
     "@types/node": "^24.9.1",
     "@types/session-file-store": "^1.2.5",
+    "copyfiles": "^2.4.1",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
