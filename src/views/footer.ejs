@@ -30,7 +30,8 @@
       if (savedData) {
         try {
           const gameData = JSON.parse(savedData);
-          window.gamData = gameData;
+          if (gameData.current && gameData.target)
+            window.gamData = gameData;
         } catch (e) {
           console.error('Failed to parse saved game data:', e);
         }

@@ -1,4 +1,3 @@
-import FormData from 'form-data';
 import { Request, Response } from "express";
 import { saveUser } from './login';
 import utils from "../utils";
@@ -33,16 +32,13 @@ function verify(req: Request) {
   const openVerify = new FormData();
   openVerify.append("openid.ns", "http://specs.openid.net/auth/2.0");
   openVerify.append("openid.mode", "check_authentication");
-  openVerify.append("openid.sig", req.query[`openid.sig`]);
+  openVerify.append("openid.sig", req.query[`openid.sig`] as string);
   for (const key of signeds) {
     openVerify.append(`openid.${key}`, req.query[`openid.${key}`] as string);
   }
   return fetch('https://steamcommunity.com/openid/login', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(openVerify)
+    body: openVerify
   }).then(res => res.text()).then(text => {
     if (text.includes('is_valid:true')) {
       const claimed_id = req.query['openid.claimed_id'] as string;

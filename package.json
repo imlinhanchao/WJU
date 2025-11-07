@@ -27,7 +27,6 @@
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "fishpi": "^0.1.4",
-    "form-data": "^4.0.4",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.2.2",
     "session-file-store": "^1.5.0",
