@@ -14,11 +14,14 @@ Vue.createApp({
       target.value = end;
       history.value = [];
       match.value = matchText;
+      save();
     }
 
     async function revoke() {
       if (!window.player) {
         current.value = history.value.pop()
+        save();
+        return;
       }
       const { current: newCurrent, matchText } = await GameCore.revoke();
       current.value = newCurrent;
@@ -44,7 +47,7 @@ Vue.createApp({
     async function addJ() {
       history.value.push(current.value);
       current.value = GameCore.addJ(current.value);
-      if (!window.player) return;
+      if (!window.player) return save();
       const { current: newCurrent, matchText, earned } = await GameCore.action('addJ');
       current.value = newCurrent;
       match.value = matchText;
@@ -54,7 +57,7 @@ Vue.createApp({
     async function addU() {
       history.value.push(current.value);
       current.value = GameCore.addU(current.value);
-      if (!window.player) return;
+      if (!window.player) return save();
       const { current: newCurrent, matchText, earned } = await GameCore.action('addU');
       current.value = newCurrent;
       match.value = matchText;
@@ -64,7 +67,7 @@ Vue.createApp({
     async function lessJ() {
       history.value.push(current.value);
       current.value = GameCore.lessJ(current.value);
-      if (!window.player) return;
+      if (!window.player) return save();
       const { current: newCurrent, matchText, earned } = await GameCore.action('lessJ');
       current.value = newCurrent;
       match.value = matchText;
@@ -74,7 +77,7 @@ Vue.createApp({
     async function lessU() {
       history.value.push(current.value);
       current.value = GameCore.lessU(current.value);
-      if (!window.player) return;
+      if (!window.player) return save();
       const { current: newCurrent, matchText, earned } = await GameCore.action('lessU');
       current.value = newCurrent;
       match.value = matchText;
@@ -84,7 +87,7 @@ Vue.createApp({
     async function double() {
       history.value.push(current.value);
       current.value = GameCore.double(current.value);
-      if (!window.player) return;
+      if (!window.player) return save();
       const { current: newCurrent, matchText, earned } = await GameCore.action('double');
       current.value = newCurrent;
       match.value = matchText;
@@ -101,8 +104,7 @@ Vue.createApp({
       watch(current, (newVal) => {
         if (newVal === target.value) {
           setTimeout(() => {
-            alert('恭喜你完成了推导！')
-            current.value = '';
+            localStorage.removeItem('gameData')
           }, 500);
           cost.value += 365;
         }
@@ -113,6 +115,9 @@ Vue.createApp({
 
     onMounted(() => {
       initDarkMode(darkMode.value);
+      if (!window.player && current.value === '') {
+        startGame();
+      }
     });
 
     const darkMode = ref(localStorage.getItem('vueuse-color-scheme') || 'auto');
@@ -127,6 +132,16 @@ Vue.createApp({
       }
       return darkMode.value === 'dark';
     });
+
+    function save() {
+      const gameData = {
+        current: current.value,
+        target: target.value,
+        matchText: match.value,
+        history: history.value,
+      };
+      localStorage.setItem('gameData', JSON.stringify(gameData));
+    }
 
 
     return {

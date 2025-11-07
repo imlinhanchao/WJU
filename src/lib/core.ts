@@ -242,10 +242,7 @@ export default class GameCore {
   async run(req: Request, res: Response) {
     const userId = req.session.user?.id;
     if (!userId) {
-      return render(res, "index", req).render({ 
-        ...this.create(req.query.seed ? Number(req.query.seed) : Date.now()), 
-        matchText: this.matchText 
-      });
+      return render(res, "index", req).render();
     }
     const currentGame = await this.getTodayGame(userId);
     if (currentGame) this.options = { ...currentGame };

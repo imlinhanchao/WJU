@@ -43,6 +43,18 @@
         <span v-if="isWin">
           🎉 你已完成今天的挑战！获得 {{ earnPoint }} 积分。🎉
         </span>
+        <% } else { -%>
+        <span v-if="isWin">
+          🎉 恭喜你！共使用了{{history.length}}步完成了推导！🎉
+        </span>
+        <p v-if="isWin">
+          <button 
+            @click="startGame" 
+            aria-label="重新开始"
+            class="font-bold py-2 px-4 rounded m-2 font-mono text">
+            <span>↻</span> 再来一局！
+          </button>
+        </p>
         <% } -%>
         <section v-if="current && !isWin" class="space-x-1 absolute bottom-[1em] gap-2 flex flex-wrap items-center justify-center">
           <button 

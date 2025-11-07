@@ -25,6 +25,17 @@
       earnedPoint: <%- JSON.stringify(locals.earnedPoint || 0) %>,
     };
     window.player = <%- JSON.stringify(locals.user || null) %>;
+    if (!window.player) {
+      const savedData = localStorage.getItem('gameData');
+      if (savedData) {
+        try {
+          const gameData = JSON.parse(savedData);
+          window.gamData = gameData;
+        } catch (e) {
+          console.error('Failed to parse saved game data:', e);
+        }
+      }
+    }
   </script>
   <% } -%>
 </body>

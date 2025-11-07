@@ -13,9 +13,6 @@ class GameCore {
       if (rsp.code) {
         throw new Error(rsp.msg);
       }
-      if (rsp.data.win) {
-        setTimeout(() => alert(`恭喜你完成了推导！奖励 ${rsp.data.earned} 积分。`), 500);
-      }
       return rsp.data;
     });
   }
