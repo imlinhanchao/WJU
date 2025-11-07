@@ -15,8 +15,14 @@ Vue.createApp({
       history.value = [];
       match.value = matchText;
     }
-    function revoke() {
-      current.value = history.value.pop();
+
+    async function revoke() {
+      if (!window.player) {
+        current.value = history.value.pop()
+      }
+      const { current: newCurrent, matchText } = await GameCore.revoke();
+      current.value = newCurrent;
+      match.value = matchText;
     }
 
     const matchText = computed(() => {
