@@ -39,10 +39,12 @@
             <% if(locals.user){ -%><span>(100 points)</span><% } -%>
           </button>
         </section>
-        <span v-if="current && current == matchText">
+        <% if(locals.user) { %>
+        <span v-if="isWin">
           🎉 你已完成今天的挑战！获得 {{ earnPoint }} 积分。🎉
         </span>
-        <section v-if="current" class="space-x-1 absolute bottom-[1em] gap-2 flex flex-wrap items-center justify-center">
+        <% } -%>
+        <section v-if="current && !isWin" class="space-x-1 absolute bottom-[1em] gap-2 flex flex-wrap items-center justify-center">
           <button 
             @click="addJ" 
             class="bg-action-1 font-bold py-2 px-4 rounded" 

@@ -95,6 +95,7 @@ Vue.createApp({
     const canAddU = computed(() => !current.value.endsWith('UUU'));
     const canLessJ = computed(() => current.value.includes('JJJ'));
     const canLessU = computed(() => current.value.includes('UUU'));
+    const isWin = computed(() => current.value === matchText.value && current.value !== '');
 
     if (!window.player) {
       watch(current, (newVal) => {
@@ -136,6 +137,7 @@ Vue.createApp({
       current,
       matchText,
       earnPoint,
+      isWin,
       startGame,
       addJ,
       addU,
