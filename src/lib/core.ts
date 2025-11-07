@@ -121,10 +121,10 @@ export default class GameCore {
     return GameRepo.findOne({ 
       where: { 
         userId: userId,
-        createTime: MoreThan(Math.floor(Date.now() / 864000) * 864000),
+        createTime: MoreThan(Math.floor(Date.now() / 864000000) * 864000000),
       },
       order: { updatedTime: 'DESC' } 
-    })
+    });
   }
 
   getCurrent(userId: string) {
@@ -132,7 +132,7 @@ export default class GameCore {
       where: { 
         userId: userId,
         current: Not(Equal(this.options.target)),
-        createTime: MoreThan(Math.floor(Date.now() / 864000) * 864000),
+        createTime: MoreThan(Math.floor(Date.now() / 864000000) * 864000000),
       },
       order: { updatedTime: 'DESC' } 
     });
