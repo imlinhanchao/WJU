@@ -115,9 +115,6 @@ Vue.createApp({
 
     onMounted(() => {
       initDarkMode(darkMode.value);
-      if (!window.player && current.value === '') {
-        startGame();
-      }
     });
 
     const darkMode = ref(localStorage.getItem('vueuse-color-scheme') || 'auto');
