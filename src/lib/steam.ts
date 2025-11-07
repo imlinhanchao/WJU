@@ -7,11 +7,10 @@ export async function login(req: Request, res: Response) {
   if (req.query['openid.mode'] === 'id_res') {
     const userId = await verify(req);
     if (userId) {
-      const { players: userInfos } = await getUserInfo(userId);
-      const userInfo = userInfos[0];
+      const [ userInfo ] = await getUserInfo(userId);
       req.session.user = { 
-        username: userInfo.data.profileurl.trim().split('/').slice(0, -1).pop() || userId, 
-        nickname: userInfo.data.personaname, 
+        username: userInfo.profileurl.trim().split('/').slice(0, -1).pop() || userId, 
+        nickname: userInfo.personaname, 
         id: userId,
         lastLogin: Date.now(),
         from: 'steam',
@@ -49,5 +48,9 @@ function verify(req: Request) {
 }
 
 function getUserInfo(steamid: string) {
-  return fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${utils.config.login.steamApiKey}&steamids=${steamid}`).then(res => res.json());
+  return fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${utils.config.login.steamApiKey}&steamids=${steamid}`)
+    .then(res => res.json())
+    .then(data => {
+      return data.response.players;
+    });
 }
