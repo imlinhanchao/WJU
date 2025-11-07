@@ -11,6 +11,10 @@ const router = Router();
 
 router.use("/api", ApiRouter);
 router.use("/login", LoginRouter);
+router.use("/logout", (req: Request, res: Response) => {
+  req.session.user = undefined;
+  res.redirect("/");
+});
 router.use("/u", ProfileRouter);
 router.get("/rank", async (req: Request, res: Response) => {
   const ranks = await ProfileRepo.find({

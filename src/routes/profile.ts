@@ -16,7 +16,15 @@ router.get("/:from/:username", async (req: Request, res: Response, next) => {
   }
   const profile = await ProfileRepo.findOne({ where: { user: user.id } });
   return render(res, "profile").title(`@${user.username}`).error(error).render({
-    profile,
+    profile: profile ?? {
+      ...user,
+      total: 0,
+      matched: 0,
+      winRate: 0,
+      avgSteps: 0,
+      avgTimeCost: 0,
+      avgEarnedPoint: 0,
+    },
     avgTimeCost: profile ? shortTime(profile.avgTimeCost * 1000) : 0,
   });
 });

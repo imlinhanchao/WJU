@@ -6,6 +6,7 @@ Vue.createApp({
     const target = ref(window.gamData?.target);
     const match = ref(window.gamData?.matchText || '');
     const history = ref(window.gamData?.history || []);
+    const earnPoint = ref(window.gamData?.earnedPoint || 0);
     async function startGame() {
       const { source: begin, target: end, matchText } = await GameCore.start();
       console.log(`Game started: `, begin, '=>', end);
@@ -38,45 +39,50 @@ Vue.createApp({
       history.value.push(current.value);
       current.value = GameCore.addJ(current.value);
       if (!window.player) return;
-      const { current: newCurrent, matchText } = await GameCore.action('addJ');
+      const { current: newCurrent, matchText, earned } = await GameCore.action('addJ');
       current.value = newCurrent;
       match.value = matchText;
+      earnPoint.value = earned;
     }
 
     async function addU() {
       history.value.push(current.value);
       current.value = GameCore.addU(current.value);
       if (!window.player) return;
-      const { current: newCurrent, matchText } = await GameCore.action('addU');
+      const { current: newCurrent, matchText, earned } = await GameCore.action('addU');
       current.value = newCurrent;
       match.value = matchText;
+      earnPoint.value = earned;
     }
 
     async function lessJ() {
       history.value.push(current.value);
       current.value = GameCore.lessJ(current.value);
       if (!window.player) return;
-      const { current: newCurrent, matchText } = await GameCore.action('lessJ');
+      const { current: newCurrent, matchText, earned } = await GameCore.action('lessJ');
       current.value = newCurrent;
       match.value = matchText;
+      earnPoint.value = earned;
     }
 
     async function lessU() {
       history.value.push(current.value);
       current.value = GameCore.lessU(current.value);
       if (!window.player) return;
-      const { current: newCurrent, matchText } = await GameCore.action('lessU');
+      const { current: newCurrent, matchText, earned } = await GameCore.action('lessU');
       current.value = newCurrent;
       match.value = matchText;
+      earnPoint.value = earned;
     }
 
     async function double() {
       history.value.push(current.value);
       current.value = GameCore.double(current.value);
       if (!window.player) return;
-      const { current: newCurrent, matchText } = await GameCore.action('double');
+      const { current: newCurrent, matchText, earned } = await GameCore.action('double');
       current.value = newCurrent;
       match.value = matchText;
+      earnPoint.value = earned;
     }
 
     const canAddJ = computed(() => !current.value.endsWith('JJ'));
@@ -123,6 +129,7 @@ Vue.createApp({
       history,
       current,
       matchText,
+      earnPoint,
       startGame,
       addJ,
       addU,

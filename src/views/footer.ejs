@@ -22,6 +22,7 @@
       target: '<%= locals.target %>',
       current: '<%= locals.current %>',
       history: <%- JSON.stringify(locals.history || []) %>,
+      earnedPoint: <%- JSON.stringify(locals.earnedPoint || 0) %>,
     };
     window.player = <%- JSON.stringify(locals.user || null) %>;
   </script>

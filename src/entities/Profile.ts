@@ -14,22 +14,37 @@ import { User } from './User';
     .addSelect("COUNT(*)", "total")
     .addSelect("SUM(CASE WHEN g.current = g.target THEN 1 ELSE 0 END)", "matched")
     .addSelect(
-      `AVG(
-         CASE
-           WHEN g.history IS NULL OR g.history = '' THEN 0
-           ELSE (LENGTH(g.history) - LENGTH(REPLACE(g.history, ',', '')) + 1)
-         END
-       )`,
-      "avgSteps"
-    )
-    .addSelect(
       `CASE WHEN COUNT(*) = 0 THEN 0
             ELSE ROUND(SUM(CASE WHEN g.current = g.target THEN 1 ELSE 0 END) / COUNT(*), 4)
       END`,
       "winRate"
     )
-    .addSelect("AVG((g.updatedTime - g.createTime) / 1000.0)", "avgTimeCost")
-    .addSelect("AVG(CAST(g.earnedPoint AS DECIMAL(18,2)))", "avgEarnedPoint")
+    .addSelect(
+      `AVG(
+         CASE
+           WHEN g.current = g.target AND g.history IS NOT NULL AND g.history <> ''
+           THEN (LENGTH(g.history) - LENGTH(REPLACE(g.history, ',', '')) + 1)
+           ELSE NULL
+         END
+       )`,
+      "avgSteps"
+    )
+    .addSelect(
+      `AVG(
+         CASE
+           WHEN g.current = g.target AND g.createTime IS NOT NULL AND g.updatedTime IS NOT NULL
+           THEN (g.updatedTime - g.createTime) / 1000.0
+           ELSE NULL
+         END
+       )`,
+      "avgTimeCost"
+    )
+    .addSelect(
+      `AVG(
+         CASE WHEN g.current = g.target THEN CAST(g.earnedPoint AS DECIMAL(18,2)) ELSE NULL END
+       )`,
+      "avgEarnedPoint"
+    )
     .from(Game, "g")
     .innerJoin(User, "user", "user.id = g.userId")
     .groupBy("userId"),
