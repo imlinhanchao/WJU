@@ -15,7 +15,7 @@ export async function login(req: Request, res: Response) {
         nickname: userInfo.data.personaname, 
         id: userId,
         lastLogin: Date.now(),
-        from: 'fishpi',
+        from: 'steam',
         point: 500,
       };
       await saveUser(req.session.user);

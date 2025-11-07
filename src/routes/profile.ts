@@ -15,7 +15,7 @@ router.get("/:from/:username", async (req: Request, res: Response, next) => {
     return next();
   }
   const profile = await ProfileRepo.findOne({ where: { user: user.id } });
-  return render(res, "profile").title(`@${user.username}`).error(error).render({
+  return render(res, "profile", req).title(`@${user.username}`).error(error).render({
     profile: profile ?? {
       ...user,
       total: 0,

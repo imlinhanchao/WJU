@@ -21,7 +21,7 @@ router.get("/rank", async (req: Request, res: Response) => {
     order: { winRate: "DESC", avgSteps: "ASC" },
     take: 100,
   })
-  return render(res, "rank").title(`排行榜`).render({ ranks })
+  return render(res, "rank", req).title(`排行榜`).render({ ranks })
 });
 router.get("/", (req: Request, res: Response) => new Game().run(req, res));
 
