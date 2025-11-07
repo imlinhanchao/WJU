@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, Column } from "typeorm";
 
 @Entity({ comment: '用户表', name: 'user' })
 export class User {
-  @Column('bigint', { comment: "用户ID", primary: true, unique: true })
+  @Column({ comment: "用户ID", primary: true, unique: true })
   id: string;
 
   @Column({ comment: "用户名" })

@@ -22,7 +22,7 @@
             {{ t }}
           </span>
         </section>
-        <section v-if="current" class="flex items-center justify-center">
+        <section v-if="current && current !== matchText" class="flex items-center justify-center">
           <button 
             @click="revoke" 
             aria-label="撤回操作"
@@ -39,7 +39,10 @@
             <% if(locals.user){ -%><span>(100 points)</span><% } -%>
           </button>
         </section>
-        <section v-if="current" class="space-x-1 absolute bottom-[1em]">
+        <span v-if="current && current == matchText">
+          🎉 恭喜！你已完成今天的挑战！ 🎉
+        </span>
+        <section v-if="current" class="space-x-1 absolute bottom-[1em] gap-2 flex flex-wrap items-center justify-center">
           <button 
             @click="addJ" 
             class="bg-action-1 font-bold py-2 px-4 rounded" 
@@ -69,43 +72,6 @@
             :disabled="!canLessU">
             UUU => J
           </button>
-        </section>
-        <section v-if="help" class="fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
-          <section class="help flex flex-col p-5 bg-primary bg-opacity-90 rounded-lg shadow-light-100 dark:shadow-dark-100 shadow-lg max-w-[700px] w-full max-h-[95vh] space-y-2">
-            <h2 class="text-lg font-bold text-center relative pb-5">
-              <span class="font-bold text-lg">How to Play</span>
-              <button class="absolute right-0" @click="help = false">X</button>
-            </h2>
-            <p class="text-lg border-b border-dashed border-gray-500 pb-1">
-              <span class="px-2 py-1 mr-1 rounded-md bg-action-3 align-middle">游戏目标</span>
-              <b class="align-middle">通过五种不同的字符串操作，使得<code>{{ isDark ? '白色' : '黑色' }}</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
-            </p>
-            <p>
-              例如，当前字符串是 <code>WJU</code>，目标字符串是 <code class="text-blue-500">WJUJUJ</code>，
-              那么你可以先点击 <code class="text-blue-500">Wx => Wxx</code> 按钮将字符串翻倍得到 <code>WJUJU</code>，
-              然后再点击 <code class="text-green-500">+J</code> 按钮在末尾添加一个 <code>J</code>，最终得到目标字符串 <code>WJUJUJ</code>。
-            </p>
-            <p>
-              不过，<code class="text-blue-500">目标字符串</code>并不会直接在一开始就完整呈现，只有<code>当前字符串</code>依次能匹配上的字母，才会显示。
-              其余则会显示为下划线 <code class="text-gray-500">_</code>。
-            </p>
-            <p>字符串的五种操作：
-              <b class="text-green-500">+J</b>、
-              <b class="text-yellow-500">+U</b>、
-              <b class="text-blue-500">Wx => Wxx</b>、
-              <b class="text-red-500">JJJ => U</b> 和 
-              <b class="text-purple-500">UUU => J</b>，
-            都有其可执行的条件，具体如下：
-            </p>
-            <ul class="px-5 py-3 list-disc list-outside space-y-1">
-              <li><code class="text-green-500">+J</code>：结尾不是 <code>JJ</code> 时可用，执行后在字符串末尾添加一个 <code>J</code>。</li>
-              <li><code class="text-yellow-500">+U</code>：结尾不是 <code>UUU</code> 时可用，执行后在字符串末尾添加一个 <code>U</code>。</li>
-              <li><code class="text-blue-500">Wx => Wxx</code>：始终可用，执行后将字符串翻倍（例如 <code>WJU</code> 变为 <code>WJUJU</code>）。</li>
-              <li><code class="text-red-500">JJJ => U</code>：当字符串中包含 <code>JJJ</code> 时可用，执行后将 <code>JJJ</code> 替换为 <code>U</code>。</li>
-              <li><code class="text-purple-500">UUU => J</code>：当字符串中包含 <code>UUU</code> 时可用，执行后将 <code>UUU</code> 替换为 <code>J</code>。</li>
-            </ul>
-            <p>完成推导将会奖励 <code>168 ~ 365 积分</code>，撤回操作将会消耗 <code>10 积分</code>。</p>
-          </section>
         </section>
       </main>
 <%- include('footer') %>

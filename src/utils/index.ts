@@ -52,7 +52,7 @@ export function shortTime(ms: number): string {
   if (days > 0) time += `${days} 天 `;
   if (hours > 0) time += `${hours} 小时 `;
   if (minutes > 0) time += `${minutes} 分钟 `;
-  if (remainingSeconds > 0) time += `${remainingSeconds} 秒`;
+  if (remainingSeconds >= 0) time += `${remainingSeconds} 秒`;
 
   return time.trim();
 }
@@ -67,3 +67,5 @@ export function srand(seed: number) {
         return r;
     }
 }
+
+export const random = (max: number, min = 0) => Math.floor(Math.random() * (max - min)) + min;

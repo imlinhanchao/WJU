@@ -1,0 +1,67 @@
+<%- include('header') %>
+      <main class="flex-1 flex flex-col justify-center items-center relative">
+        <h2 class="text-3xl">
+          <span class="font-bold">@<%= profile.nickname || profile.username %></span>
+          <sub>
+            <a href="/logout">👋退出登录</a>
+          </sub>
+        </h2>
+        <span v-if="error" class="error">{{ error }}</span>
+        <section class="grid grid-cols-3">
+          <div class="p-4 text-center">
+            <h3 class="text-lg space-x-2 flex justify-center items-center">
+              <svg width="1em" height="1em" class="inline-block">
+                <use xlink:href="#icon-point"></use>
+              </svg>
+              <span>总积分</span>
+            </h3>
+            <p class="text-2xl"><%= profile.point %></p>
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="text-lg space-x-2 flex justify-center items-center">
+              <svg width="1em" height="1em" class="inline-block">
+                <use xlink:href="#icon-win"></use>
+              </svg>
+              <span>胜率</span>
+            </h3>
+            <p class="text-2xl"><%= (Number(profile.winRate) * 100).toFixed(2) %>%</p>
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="text-lg space-x-2 flex justify-center items-center">
+              <svg width="1em" height="1em" class="inline-block">
+                <use xlink:href="#icon-game"></use>
+              </svg>
+              <span>开局</span>
+            </h3>
+            <p class="text-2xl"><%= profile.total %></p>
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="text-lg space-x-2 flex justify-center items-center">
+              <svg width="1em" height="1em" class="inline-block">
+                <use xlink:href="#icon-time"></use>
+              </svg>
+              <span>平均耗时</span>
+            </h3>
+            <p class="text-2xl"><%= avgTimeCost %></p>
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="text-lg space-x-2 flex justify-center items-center">
+              <svg width="1em" height="1em" class="inline-block">
+                <use xlink:href="#icon-step"></use>
+              </svg>
+              <span>平均步数</span>
+            </h3>
+            <p class="text-2xl"><%= Number(profile.avgSteps) %></p>
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="text-lg space-x-2 flex justify-center items-center">
+              <svg width="1em" height="1em" class="inline-block">
+                <use xlink:href="#icon-earn"></use>
+              </svg>
+              <span>平均奖励</span>
+            </h3>
+            <p class="text-2xl"><%= Number(profile.avgEarnedPoint).toFixed(2) %></p>
+          </div>
+        </section>
+      </main>
+<%- include('footer') %>

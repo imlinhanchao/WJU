@@ -164,6 +164,7 @@ code {
   border-radius: 0.3em;
   margin: 0 0.1em;
   color: var(--code-text-color);
+  text-decoration: inherit;
 }
 
 .form {
@@ -225,6 +226,14 @@ code {
   margin: 5px auto;
 }
 
+.help {
+  display: none;
+}
+
+.help.show {
+  display: flex;
+}
+
 *[aria-label]{
   position: relative;
 }
@@ -268,3 +277,15 @@ code {
   opacity: 0;
   pointer-events: none;
 }
+
+*[aria-label].tip-top::after {
+  bottom: auto;
+  top: -2.4em;
+}
+*[aria-label].tip-top::before {
+  bottom: auto;
+  top: -0.5em;
+  border-width: 0.5em 0.5em 0 0.5em;
+  border-color: var(--disabled-color) transparent transparent transparent;
+}
+  

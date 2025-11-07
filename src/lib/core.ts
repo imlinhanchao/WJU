@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { error, json, render } from '../utils/route';
 import { GameRepo, UserRepo } from '../entities';
-import { srand } from '../utils';
+import { srand, random } from '../utils';
 import { Equal, MoreThan, Not } from 'typeorm';
 import { FingerTo } from 'fishpi';
 import utils from '../utils';
@@ -52,12 +52,12 @@ export default class GameCore {
     return text.replace(/UUU/g, 'J')
   }
 
-  canUse(text: string, create: boolean = false) {
+  canUse(text: string, create: boolean = false, step: number = 0) {
     const fns = [];
     if (create) {
       if (text.length < 15) fns.push(this.double);
-      if (!text.endsWith('UUU') && (!text.endsWith('UJ') || this.random(2) == 1)) fns.push(this.addU);
-      if (!text.endsWith('JJ') && (!text.endsWith('JU') || this.random(2) == 1)) fns.push(this.addJ);
+      if (!text.endsWith('UUU') && (text.length < 15 || step < 5) && (!text.endsWith('UJ') || this.random(2) == 1)) fns.push(this.addU);
+      if (!text.endsWith('JJ') && (text.length < 15 || step < 5) && (!text.endsWith('JU') || this.random(2) == 1)) fns.push(this.addJ);
       if (text.includes('JJJ')) fns.push(this.lessJ);
       if (text.includes('UUU')) fns.push(this.lessU);
     } else {
@@ -82,14 +82,14 @@ export default class GameCore {
       text += getLetter();
     }
     const begin = text;
-    for (let i = 0; i < 20; i++) {
-      const fns = this.canUse(text, true);
+    for (let i = 0; i < 20 || ( i >= 20 && text.length < 15); i++) {
+      const fns = this.canUse(text, true, i);
       const index = Math.ceil(this.random((fns.length - 1) * 5) / 5);
+      if (fns.length === 0) break;
       const fn = fns[index];
       const last = text;
       text = fn(text);
       console.log(`Step ${i + 1}(${fn.name}): ${last} => ${text}`);
-      if (text.length > 40) break;
     }
     this.options = {
       source: begin,
@@ -118,7 +118,7 @@ export default class GameCore {
   }
 
   getTodayGame(userId: string) {
-    return GameRepo.find({ 
+    return GameRepo.findOne({ 
       where: { 
         userId: userId,
         createTime: MoreThan(Math.floor(Date.now() / 864000) * 864000),
@@ -169,9 +169,12 @@ export default class GameCore {
       currentGame.current = newText;
       this.options = currentGame;
       if (currentGame.current === currentGame.target) {
-        currentGame.earnedPoint = Math.floor(Math.random() * (365 - 168)) + 168;
-        this.setUserPoint(userId, currentGame.earnedPoint, 'WJU游戏通关奖励');
+        const maxPoints = Array(20).fill(256).concat([365, 512, 365, 365, 512, 365, 365, 512, 365, 1024]);
+        currentGame.earnedPoint = random(maxPoints[random(maxPoints.length)], 128);
+        await this.setUserPoint(userId, currentGame.earnedPoint, 'WJU游戏通关奖励');
+        if (req.session.user) req.session.user.point += currentGame.earnedPoint;
       }
+      currentGame.updatedTime = Date.now();
       await GameRepo.save(currentGame);
       return json(res, {
         current: currentGame.current,
@@ -201,6 +204,7 @@ export default class GameCore {
     currentGame.current = lastText;
     this.options = currentGame;
     this.setUserPoint(userId, -10, 'WJU游戏撤销操作扣除');
+    if (req.session.user) req.session.user.point -= 10;
     await GameRepo.save(currentGame);
     return json(res, {
       current: currentGame.current,
@@ -225,6 +229,7 @@ export default class GameCore {
     await GameRepo.save(newGame);
     this.options = newGameData;
     this.setUserPoint(userId, -100, 'WJU游戏开局扣除');
+    if (req.session.user) req.session.user.point -= 100;
 
     return json(res, {
       ...newGameData,
@@ -242,15 +247,14 @@ export default class GameCore {
         matchText: this.matchText 
       });
     }
-    const todayGames = await this.getTodayGame(userId);
-    const currentGame = todayGames.find(g => g.current !== g.target);
+    const currentGame = await this.getTodayGame(userId);
     if (currentGame) this.options = { ...currentGame };
 
     return render(res, "index", req).render({
       ...currentGame,
       target: undefined,
       seed: undefined,
-      todayGame: todayGames,
+      todayGame: currentGame,
       matchText: this.matchText,
     });
   }

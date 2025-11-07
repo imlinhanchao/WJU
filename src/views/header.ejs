@@ -11,14 +11,69 @@
   <script src="/assets/dark.js"></script>
 </head>
 <body>
+  <%- include('symbol') %>
   <link rel="stylesheet" href="/assets/style.css">
-  <article id="app">
+  <article id="app"> 
+    <section class="loading" v-if="false">
+      <div class="wju-loading">
+        <span class="wju1">W</span>
+        <span class="wju2">J</span>
+        <span class="wju3">U</span>
+        <span class="dot1">.</span>
+        <span class="dot2">.</span>
+        <span class="dot3">.</span>
+      </div>
+    </section>
+    <section v-if="help" :class="{ show: true }" class="help z-20 fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
+      <section class="flex flex-col p-5 bg-primary bg-opacity-90 rounded-lg shadow-light-100 dark:shadow-dark-100 shadow-lg max-w-[700px] w-full max-h-[95vh] space-y-2">
+        <h2 class="text-lg font-bold text-center relative pb-5">
+          <span class="font-bold text-lg">How to Play</span>
+          <button class="absolute right-0" @click="help = false">X</button>
+        </h2>
+        <section class="overflow-auto space-y-2">
+          <p class="text-lg border-b border-dashed border-gray-500 pb-1">
+            <span class="px-2 py-1 mr-1 rounded-md bg-action-3 align-middle">游戏目标</span>
+            <b class="align-middle">通过五种不同的字符串操作，使得<code>{{ isDark ? '白色' : '黑色' }}</code>的字符串等于<code class="text-blue-500">蓝色</code>的目标字符串。</b>
+          </p>
+          <p>
+            例如，当前字符串是 <code>WJU</code>，目标字符串是 <code class="text-blue-500">WJUJUJ</code>，
+            那么你可以先点击 <code class="text-blue-500">Wx => Wxx</code> 按钮将字符串翻倍得到 <code>WJUJU</code>，
+            然后再点击 <code class="text-green-500">+J</code> 按钮在末尾添加一个 <code>J</code>，最终得到目标字符串 <code>WJUJUJ</code>。
+          </p>
+          <p>
+            <code class="text-blue-500">目标字符串</code>并不会直接在一开始就完整呈现，只有<code>当前字符串</code>依次能匹配上的字母，才会显示。
+            其余则会显示为下划线 <code class="text-gray-500">_</code>。
+          </p>
+          <p>字符串的五种操作：
+            <b class="text-green-500">+J</b>、
+            <b class="text-yellow-500">+U</b>、
+            <b class="text-blue-500">Wx => Wxx</b>、
+            <b class="text-red-500">JJJ => U</b> 和 
+            <b class="text-purple-500">UUU => J</b>，
+          都有其可执行的条件，具体如下：
+          </p>
+          <ul class="px-5 py-3 list-disc list-outside">
+            <li><code class="text-green-500">+J</code>：结尾不是 <code>JJ</code> 时可用，执行后在字符串末尾添加一个 <code>J</code>。</li>
+            <li><code class="text-yellow-500">+U</code>：结尾不是 <code>UUU</code> 时可用，执行后在字符串末尾添加一个 <code>U</code>。</li>
+            <li><code class="text-blue-500">Wx => Wxx</code>：始终可用，执行后将字符串翻倍（例如 <code>WJU</code> 变为 <code>WJUJU</code>）。</li>
+            <li><code class="text-red-500">JJJ => U</code>：当字符串中包含 <code>JJJ</code> 时可用，执行后将 <code>JJJ</code> 替换为 <code>U</code>。</li>
+            <li><code class="text-purple-500">UUU => J</code>：当字符串中包含 <code>UUU</code> 时可用，执行后将 <code>UUU</code> 替换为 <code>J</code>。</li>
+          </ul>
+          <<%- locals.user ? 'p' : 'del aria-label="需要登录" class="tip-top"' -%>>
+            完成推导将会奖励 <code>168 ~ 1024 积分</code>，撤回操作将会消耗 <code>10 积分</code>。<b>每日限通关一次！</b>
+          </<%= locals.user ? 'p' : 'del' -%>>
+        </section>
+      </section>
+    </section>
     <section class="flex-col h-full game-section" :class="{ 'flex': true }">
       <header class="text-center py-5">
         <% if (locals.name !== 'index') { -%>
-        <h1><a href="/">WJU Puzzle</a></h1>
+        <h1 class="z-11"><a href="/">WJU Puzzle</a></h1>
         <% } -%>
-        <span class="absolute z-10 top-2 right-5 py-5 text-sm text-xl inline-flex">
+        <span class="absolute z-10 top-2 right-5 left-5 py-2 text-sm text-xl flex justify-between items-center">
+          <span>
+            <a class="text-3xl" href="javascript:void(0)" @click="help = !help">?</a>
+          </span>
           <span id="dark-mode-btn" class="cursor-pointer inline-flex" @click="switchDarkMode">
             <svg class="dark-icon" :class="{ hidden: !isDark }" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M22 17v2h-1v1h-1v1h-2v1h-2v1h-6v-1H8v-1H6v-1H5v-1H4v-2H3v-2H2V9h1V7h1V5h1V4h1V3h2V2h2V1h5v1h-2v1h-2v1h-1v2H9v2H8v4h1v2h1v2h1v1h2v1h2v1h4v-1h2v-1z"/></svg>
             <svg class="light-icon" :class="{ hidden: isDark }" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 36 36"><path fill="#ffac33" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2z"/><circle cx="18" cy="18" r="10" fill="#ffac33"/></svg>

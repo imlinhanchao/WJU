@@ -1,27 +1,18 @@
 
       <footer class="text-center space-y-2 py-5 opacity-30">
         <% if (!['config', 'register', 'login', 'profile'].includes(locals.name)){ -%>
-        <div id="userinfo">
-            <a href="javascript:void(0)" @click="help = !help">帮助?</a> |
+        <div id="userinfo" class="space-x-2">
         <% if(!locals.user){ -%>
             <a href="/login" id="login">登录</a>
         <% }else{ -%>
             @<a title="个人资料" href="/u/<%= user.from %>/<%= user.username %>"><%= user.nickname || user.username %></a>
-            <% } -%>
+        <% } -%>
+          <span>|</span>
+          <a href="/rank">排行榜</a>
         </div>
         <% } -%>
         <p>&copy; <%= new Date().getFullYear() -%> <a href="https://github.com/imlinhanchao/WJU" target="_blank">WJU Derivation</a>. All rights reserved.</p>
       </footer>
-    </section>
-    <section class="loading" v-if="false">
-      <div class="wju-loading">
-        <span class="wju1">W</span>
-        <span class="wju2">J</span>
-        <span class="wju3">U</span>
-        <span class="dot1">.</span>
-        <span class="dot2">.</span>
-        <span class="dot3">.</span>
-      </div>
     </section>
   </article>
   <% if (locals.name === 'index') { -%>
