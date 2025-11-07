@@ -14,14 +14,16 @@
         </svg>
 				<span class="font-bold text-[1.5em] flex-1 block text-justify">GitHub 登 录</span>
       </a>
+      <% } -%>
+      <% if (locals.config.login.steamApiKey) { -%>
       <a href="login/steam" class="w-full inline-flex px-3 py-2 rounded-[4em] text-[#ffffff] bg-[#0d2150] hover:bg-[#134376] items-center space-x-2">
         <svg width="3em" height="3em">
           <use xlink:href="#icon-steam"></use>
         </svg>
 				<span class="font-bold text-[1.5em] flex-1 block text-justify"> Steam 登 录</span>
       </a>
+      <% } -%>
     </section>
-    <% } -%>
     <% if (locals.message){ -%>
       <p class="<%= type -%> message">
         <%= message -%>
