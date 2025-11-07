@@ -1,6 +1,6 @@
 
       <footer class="text-center space-y-2 py-5 opacity-30">
-        <% if (!['config', 'register', 'login', 'profile'].includes(locals.name)){ -%>
+        <% if (!['config', 'register', 'login'].includes(locals.name)){ -%>
         <div id="userinfo" class="space-x-2">
         <% if(!locals.user){ -%>
             <a href="/login" id="login">登录</a>
