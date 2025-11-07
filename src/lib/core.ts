@@ -141,7 +141,7 @@ export default class GameCore {
   async setUserPoint(userId: string, point: number, memo?: string) {
     const user = await UserRepo.findOne({ where: { id: userId } });
     if (!user) return;
-    if (user.from == 'fishpi') {
+    if (user.from == 'fishpi' && utils.config.secret.goldenKey) {
       FingerTo(utils.config.secret.goldenKey).editUserPoints(user.username, point, memo || 'WJU游戏奖励').catch(console.error);
     }
     return UserRepo.update({ id: userId }, { point: () => `point + (${point})` });

@@ -3,6 +3,7 @@ import { Router } from "express";
 import { render } from '../utils/route';
 import { login as fishpiLogin } from '../lib/fishpi';
 import { login as githubLogin } from '../lib/github';
+import { login as steamLogin } from '../lib/steam';
 
 const router = Router();
 
@@ -13,5 +14,6 @@ router.get("/", (req: Request, res: Response) => {
 });
 router.get("/fishpi", fishpiLogin);
 router.get("/github", githubLogin);
+router.get("/steam", steamLogin);
 
 export default router;

@@ -44,7 +44,7 @@
           🎉 你已完成今天的挑战！获得 {{ earnPoint }} 积分。🎉
         </span>
         <% } else { -%>
-        <span v-if="isWin">
+        <span v-if="isWin" class="mt-20">
           🎉 恭喜你！共使用了{{history.length}}步完成了推导！🎉
         </span>
         <p v-if="isWin">

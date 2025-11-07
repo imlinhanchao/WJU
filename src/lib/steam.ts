@@ -1,0 +1,57 @@
+import FormData from 'form-data';
+import { Request, Response } from "express";
+import { saveUser } from './login';
+import utils from "../utils";
+
+export async function login(req: Request, res: Response) {
+  const domain = req.host;
+  if (req.query['openid.mode'] === 'id_res') {
+    const userId = await verify(req);
+    if (userId) {
+      const { players: userInfos } = await getUserInfo(userId);
+      const userInfo = userInfos[0];
+      req.session.user = { 
+        username: userInfo.data.profileurl.trim().split('/').slice(0, -1).pop() || userId, 
+        nickname: userInfo.data.personaname, 
+        id: userId,
+        lastLogin: Date.now(),
+        from: 'fishpi',
+        point: 500,
+      };
+      await saveUser(req.session.user);
+      return res.redirect("/");
+    } else {
+      req.session.error = "登录验证失败，请重试";
+      return res.redirect("/login");
+    }
+  }
+  res.redirect(`https://steamcommunity.com/openid/login?openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.mode=checkid_setup&openid.return_to=https%3A%2F%2F${domain}%2Flogin%2Fsteam&openid.realm=https%3A%2F%2F${domain}&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select`);
+}
+
+function verify(req: Request) {
+  const signeds = req.query['openid.signed']?.toString().split(',') || [];
+  const openVerify = new FormData();
+  openVerify.append("openid.ns", "http://specs.openid.net/auth/2.0");
+  openVerify.append("openid.mode", "check_authentication");
+  openVerify.append("openid.sig", req.query[`openid.sig`]);
+  for (const key of signeds) {
+    openVerify.append(`openid.${key}`, req.query[`openid.${key}`] as string);
+  }
+  return fetch('https://steamcommunity.com/openid/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(openVerify)
+  }).then(res => res.text()).then(text => {
+    if (text.includes('is_valid:true')) {
+      const claimed_id = req.query['openid.claimed_id'] as string;
+      return claimed_id.split('/').pop();
+    }
+    return null;
+  })
+}
+
+function getUserInfo(steamid: string) {
+  return fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${utils.config.login.steamApiKey}&steamids=${steamid}`).then(res => res.json());
+}
