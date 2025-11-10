@@ -29,7 +29,7 @@
                         steam: 'steam'
                       }[ranks[i].from] %>"></use>
                     </svg>
-                    <span><%= ranks[i].nickname %></span>
+                    <span><%= ranks[i].nickname || ranks[i].username %></span>
                   </a>
                 </td>
                 <td class="p-2"><%= (Number(ranks[i].winRate) * 100).toFixed(2) %>%</td>
