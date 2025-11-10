@@ -18,7 +18,7 @@ router.use("/logout", (req: Request, res: Response) => {
 router.use("/u", ProfileRouter);
 router.get("/rank", async (req: Request, res: Response) => {
   const ranks = await ProfileRepo.find({
-    order: { winRate: "DESC", avgSteps: "ASC" },
+    order: { winRate: "DESC", matched: "DESC", avgSteps: "ASC" },
     take: 100,
   })
   return render(res, "rank", req).title(`排行榜`).render({ ranks })
