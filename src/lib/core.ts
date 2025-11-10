@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { error, json, render } from '../utils/route';
 import { GameRepo, UserRepo } from '../entities';
 import { srand, random } from '../utils';
-import { Equal, MoreThan, Not } from 'typeorm';
+import { And, Equal, MoreThan, Not } from 'typeorm';
 import { FingerTo } from 'fishpi';
 import utils from '../utils';
 
@@ -127,14 +127,15 @@ export default class GameCore {
     });
   }
 
-  getCurrent(userId: string) {
+  getYesterdayGame(userId: string) {
+    const todayStart = Math.floor(Date.now() / 864000000) * 864000000;
+    const yesterdayStart = todayStart - 864000000;
     return GameRepo.findOne({ 
       where: { 
         userId: userId,
-        current: Not(Equal(this.options.target)),
-        createTime: MoreThan(Math.floor(Date.now() / 864000000) * 864000000),
+        createTime: And(MoreThan(yesterdayStart), Not(MoreThan(todayStart))),
       },
-      order: { updatedTime: 'DESC' } 
+      order: { updatedTime: 'DESC' }
     });
   }
 
@@ -153,8 +154,8 @@ export default class GameCore {
       if (!userId) {
         return error(res, "请先登录后再进行游戏操作");
       }
-      const currentGame = await this.getCurrent(userId);
-      if (!currentGame) {
+      const currentGame = await this.getTodayGame(userId);
+      if (!currentGame || currentGame.earnedPoint) {
         return error(res, "当前无进行中的游戏，请先创建新游戏");
       }
       const action = req.params.action as string;
@@ -169,8 +170,14 @@ export default class GameCore {
       currentGame.current = newText;
       this.options = currentGame;
       if (currentGame.current === currentGame.target) {
-        const maxPoints = Array(20).fill(256).concat([365, 512, 365, 365, 512, 365, 365, 512, 365, 1024]);
-        currentGame.earnedPoint = random(maxPoints[random(maxPoints.length)], 128);
+        let basePoint = 128;
+        const yesterdayGame = await this.getYesterdayGame(userId);
+        if (yesterdayGame && yesterdayGame.earnedPoint) {
+          basePoint += Math.floor(yesterdayGame.earnedPoint / 3);
+        }
+        const maxPoints = Array(20).fill(256).concat([365, 512, 365, 365, 512, 365, 365, 512, 365, 1024])
+          .filter((v) => v >= basePoint);
+        currentGame.earnedPoint = random(maxPoints[random(maxPoints.length)], basePoint);
         await this.setUserPoint(userId, currentGame.earnedPoint, 'WJU游戏通关奖励');
         if (req.session.user) req.session.user.point += currentGame.earnedPoint;
       }
@@ -193,8 +200,8 @@ export default class GameCore {
     if (!userId) {
       return error(res, "请先登录后再进行游戏操作");
     }
-    const currentGame = await this.getCurrent(userId);
-    if (!currentGame) {
+    const currentGame = await this.getTodayGame(userId);
+    if (!currentGame || currentGame.earnedPoint) {
       return error(res, "当前无进行中的游戏，请先创建新游戏");
     }
     if (currentGame.history.length === 0) {
@@ -247,12 +254,15 @@ export default class GameCore {
     const currentGame = await this.getTodayGame(userId);
     if (currentGame) this.options = { ...currentGame };
 
+    const yesterdayGame = await this.getYesterdayGame(userId);
+
     return render(res, "index", req).render({
       ...currentGame,
       target: undefined,
       seed: undefined,
       todayGame: currentGame,
       matchText: this.matchText,
+      yesterday: yesterdayGame,
     });
   }
 }
