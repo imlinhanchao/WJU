@@ -66,7 +66,7 @@
              ~ 1024 积分</code>，撤回操作将会消耗 <code>10 积分</code>。<b>每日限通关一次！</b>
           </<%= locals.user ? 'p' : 'del' -%>>
           <i class="border-l-4 border-[var(--btn-disabled-bg-color)] block p-1 bg-[var(--disabled-color)]">
-            <%= locals.user ? '若昨日成功通关，则今日获取积分的下限将增加昨日获得积分的三分之一！' : '' -%>
+            <%= locals.user ? '若昨日成功通关，则昨日获得积分的三分之一将叠加到今日的通关奖励！' : '' -%>
           </i>
         </section>
       </section>
