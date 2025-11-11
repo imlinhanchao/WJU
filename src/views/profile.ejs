@@ -2,9 +2,12 @@
       <main class="flex-1 flex flex-col justify-center items-center relative">
         <h2 class="text-3xl">
           <span class="font-bold">@<%= profile.nickname || profile.username %></span>
+          <!-- 这里要判断一下是否登录，并且是不是自己 -->
+          <% if(locals.user && locals.user.username === profile.username){ -%>
           <sub class="text-sm text-[var(--disabled-color)]">
             <a href="/logout">👋退出登录</a>
           </sub>
+          <% } -%>
         </h2>
         <span v-if="error" class="error">{{ error }}</span>
         <section class="grid grid-cols-3">

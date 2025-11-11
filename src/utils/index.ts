@@ -69,3 +69,9 @@ export function srand(seed: number) {
 }
 
 export const random = (max: number, min = 0) => Math.floor(Math.random() * (max - min)) + min;
+
+export const weightedRandom = (min: number, max: number, weight: number): number => {
+  const rnd = Math.random();
+  const biased = Math.pow(rnd, 1 - weight);
+  return Math.floor(min + biased * (max - min));
+}

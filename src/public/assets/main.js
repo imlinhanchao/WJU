@@ -106,7 +106,8 @@ Vue.createApp({
           setTimeout(() => {
             localStorage.removeItem('gameData')
           }, 500);
-          cost.value += 365;
+          // cost.value += 365;
+          // 这东西好像没用？
         }
       });
     }
