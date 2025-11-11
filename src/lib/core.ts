@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { error, json, render } from '../utils/route';
 import { GameRepo, UserRepo } from '../entities';
 import { srand, random, weightedRandom} from '../utils';
-import { And, Equal, MoreThan, Not } from 'typeorm';
+import { And, MoreThan, Not } from 'typeorm';
 import { FingerTo } from 'fishpi';
 import utils from '../utils';
 import { estimateDifficulty } from './difficulty';
@@ -18,7 +18,6 @@ export interface IGame {
 
 export default class GameCore {
   random: (max: number) => number;
-  weightedRandom: (min: number, max: number, weight: number) => number;
   options: IGame;
   MAX_DIFFICULTY : number = 15;
 
@@ -194,7 +193,7 @@ export default class GameCore {
          // --- 归一化权重 ---
         const cappedDifficulty = Math.min(currentGame.difficulty, this.MAX_DIFFICULTY);
         const normalized = cappedDifficulty / this.MAX_DIFFICULTY; // 0~1
-        const earnedPoint = this.weightedRandom(pointMin, pointMax, normalized);
+        const earnedPoint = weightedRandom(pointMin, pointMax, normalized);
         
         currentGame.earnedPoint = earnedPoint;
         await this.setUserPoint(userId, currentGame.earnedPoint, 'WJU游戏通关奖励');
