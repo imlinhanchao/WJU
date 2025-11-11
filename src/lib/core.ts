@@ -121,15 +121,15 @@ export default class GameCore {
     return GameRepo.findOne({ 
       where: { 
         userId: userId,
-        createTime: MoreThan(Math.floor(Date.now() / 864000000) * 864000000),
+        createTime: MoreThan(Math.floor(Date.now() / 86400000) * 86400000),
       },
       order: { updatedTime: 'DESC' } 
     });
   }
 
   getYesterdayGame(userId: string) {
-    const todayStart = Math.floor(Date.now() / 864000000) * 864000000;
-    const yesterdayStart = todayStart - 864000000;
+    const todayStart = Math.floor(Date.now() / 86400000) * 86400000;
+    const yesterdayStart = todayStart - 86400000;
     return GameRepo.findOne({ 
       where: { 
         userId: userId,
