@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { error, json, render } from '../utils/route';
 import { GameRepo, UserRepo } from '../entities';
-import { srand, random } from '../utils';
+import { srand, random, weightedRandom} from '../utils';
 import { And, Equal, MoreThan, Not } from 'typeorm';
 import { FingerTo } from 'fishpi';
 import utils from '../utils';
+import { estimateDifficulty } from './difficulty';
 
 export interface IGame {
   source: string;
@@ -12,11 +13,14 @@ export interface IGame {
   seed: number;
   current: string;
   history: string[];
+  difficulty: number;
 }
 
 export default class GameCore {
   random: (max: number) => number;
+  weightedRandom: (min: number, max: number, weight: number) => number;
   options: IGame;
+  MAX_DIFFICULTY : number = 15;
 
   constructor(options?: IGame) {
     this.options = options || {
@@ -25,6 +29,7 @@ export default class GameCore {
       seed: Date.now(),
       current: '',
       history: [],
+      difficulty: 0
     };
   }
 
@@ -91,12 +96,17 @@ export default class GameCore {
       text = fn(text);
       console.log(`Step ${i + 1}(${fn.name}): ${last} => ${text}`);
     }
+
+    
+    const difficulty = estimateDifficulty(text,1.2);
+
     this.options = {
       source: begin,
       target: text,
       seed,
       current: begin,
       history: [],
+      difficulty: difficulty
     };
     
     return this.options;
@@ -177,7 +187,16 @@ export default class GameCore {
         }
         const maxPoints = Array(20).fill(256).concat([365, 512, 365, 365, 512, 365, 365, 512, 365, 1024])
           .filter((v) => v >= basePoint);
-        currentGame.earnedPoint = random(maxPoints[random(maxPoints.length)], basePoint);
+        
+        const pointMax = maxPoints[random(maxPoints.length)];
+        const pointMin = basePoint;
+
+         // --- 归一化权重 ---
+        const cappedDifficulty = Math.min(currentGame.difficulty, this.MAX_DIFFICULTY);
+        const normalized = cappedDifficulty / this.MAX_DIFFICULTY; // 0~1
+        const earnedPoint = this.weightedRandom(pointMin, pointMax, normalized);
+        
+        currentGame.earnedPoint = earnedPoint;
         await this.setUserPoint(userId, currentGame.earnedPoint, 'WJU游戏通关奖励');
         if (req.session.user) req.session.user.point += currentGame.earnedPoint;
       }

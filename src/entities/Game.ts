@@ -27,6 +27,15 @@ export class Game {
   @Column({ comment: "获得积分" })
   earnedPoint: number = 0;
 
+  @Column({ 
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    comment: "游戏难度",
+    default: 0.00 
+  })
+  difficulty: number = 0;
+
   @Column('bigint', { comment: "创建时间" })
   createTime: number = Date.now();
 
