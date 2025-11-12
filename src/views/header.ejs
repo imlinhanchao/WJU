@@ -62,7 +62,7 @@
           </ul>
           <<%- locals.user ? 'p' : 'del aria-label="需要登录" class="tip-top"' -%>>
             完成推导将会奖励 <code>
-            <%- locals.yesterday?.earnedPoint ? `<del>128</del>${128 + locals.yesterday.earnedPoint / 3}` : '128' -%>
+            <%- locals.yesterday?.earnedPoint ? `<del>128</del>${128 + Math.floor(locals.yesterday.earnedPoint / 3)}` : '128' -%>
              ~ 1024 积分</code>，撤回操作将会消耗 <code>10 积分</code>。<b>每日限通关一次！</b>
           </<%= locals.user ? 'p' : 'del' -%>>
           <i class="border-l-4 border-[var(--btn-disabled-bg-color)] block p-1 bg-[var(--disabled-color)]">
