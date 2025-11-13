@@ -6,7 +6,8 @@
           </h2>
         </header>
         <section id="rank">
-          <p class="my-2 text-sm italic text-[var(--btn-disabled-bg-color)]">* 每局综合评分 = 难度系数<sup>2</sup> ÷ 步数 × 1000，综合评分则是所有通关得分的平均值。</p>
+          <p class="my-2 text-sm italic text-[var(--btn-disabled-bg-color)]">
+            * 综合评分 = AVG(难度系数<sup>2</sup> ÷ 步数) * 胜率 * LOG(开局数 + 1) × 1000。</p>
           <table class="m-auto text-center">
             <thead class="sticky top-0 border-b border-dashed border-current bg-[var(--bg-color)]">
               <tr>

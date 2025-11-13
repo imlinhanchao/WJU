@@ -46,7 +46,7 @@ import { User } from './User';
               THEN g.difficulty * g.difficulty / ((LENGTH(g.history) - LENGTH(REPLACE(g.history, ',', '')) + 1))
               ELSE NULL
           END
-      )`, 
+      ) * ROUND(SUM(CASE WHEN g.current = g.target THEN 1 ELSE 0 END) / COUNT(*), 4) * LOG(COUNT(*) + 1)`, 
       `avgScore`)
     .addSelect(
       `AVG(
