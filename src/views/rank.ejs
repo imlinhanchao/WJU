@@ -34,7 +34,7 @@
                     <span><%= ranks[i].nickname || ranks[i].username %></span>
                   </a>
                 </td>
-                <td class="p-2"><%= ranks[i].avgScore ? Math.ceil(Math.pow(Number(ranks[i].avgScore), 2) / Number(ranks[i].avgSteps) * 1000) : '--' %></td>
+                <td class="p-2"><%= ranks[i].avgScore ? Math.ceil(Number(ranks[i].avgScore) * 1000) : '--' %></td>
                 <td class="p-2"><%= (Number(ranks[i].winRate) * 100).toFixed(2) %>%</td>
                 <td class="p-2"><%= ranks[i].matched %></td>
                 <td class="p-2"><%= Number(ranks[i].avgSteps).toFixed(0) %></td>
