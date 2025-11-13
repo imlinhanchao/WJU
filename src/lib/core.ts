@@ -96,8 +96,7 @@ export default class GameCore {
       console.log(`Step ${i + 1}(${fn.name}): ${last} => ${text}`);
     }
 
-    
-    const difficulty = estimateDifficulty(text,1.2);
+    const difficulty = estimateDifficulty(text, 1.2);
 
     this.options = {
       source: begin,
@@ -261,6 +260,20 @@ export default class GameCore {
       target: undefined,
       seed: undefined,
       matchText: this.matchText,
+    });
+  }
+
+  async reGenDifficulty(req: Request, res: Response) {
+    GameRepo.find({ where: { difficulty: 0 } }).then(async games => {
+      for (const game of games) {
+        const newDifficulty = estimateDifficulty(game.target, 1.2);
+        game.difficulty = newDifficulty;
+        await GameRepo.save(game);
+        console.log(`Game ${game.id} 重新计算难度为 ${newDifficulty}`);
+      }
+      return json(res, { updated: games.length });
+    }).catch(err => {
+      return error(res, "重新计算难度失败: " + (err as Error).message);
     });
   }
 

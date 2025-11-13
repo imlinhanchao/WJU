@@ -6,11 +6,13 @@
           </h2>
         </header>
         <section id="rank">
+          <p class="my-2 text-sm italic text-[var(--btn-disabled-bg-color)]">* 每局综合评分 = (难度系数)<sup>2</sup> / 步数 * 1000，综合评分则是所有通关得分的平均值。</p>
           <table class="m-auto text-center">
             <thead class="sticky top-0 border-b border-dashed border-current bg-[var(--bg-color)]">
               <tr>
                 <th class="th_number">排名</th>
                 <th class="th_name">用户名</th>
+                <th class="th_stage">综合评分<sup>*</sup></th>
                 <th class="th_stage">胜率</th>
                 <th class="th_stage">通关数</th>
                 <th class="th_date">平均步数</th>
@@ -32,13 +34,15 @@
                     <span><%= ranks[i].nickname || ranks[i].username %></span>
                   </a>
                 </td>
+                <td class="p-2"><%= ranks[i].avgScore ? Math.ceil(Math.pow(Number(ranks[i].avgScore), 2) / Number(ranks[i].avgSteps) * 1000) : '--' %></td>
                 <td class="p-2"><%= (Number(ranks[i].winRate) * 100).toFixed(2) %>%</td>
                 <td class="p-2"><%= ranks[i].matched %></td>
-                <td class="p-2"><%= Number(ranks[i].avgSteps) %></td>
+                <td class="p-2"><%= Number(ranks[i].avgSteps).toFixed(0) %></td>
               </tr>
 <% } -%>
             </tbody>
           </table>
         </section>
       </main>
+
 <%- include('footer') %>

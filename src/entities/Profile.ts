@@ -41,6 +41,15 @@ import { User } from './User';
     )
     .addSelect(
       `AVG(
+          CASE
+              WHEN g.current = g.target AND g.history IS NOT NULL AND g.history <> '' AND g.difficulty > 0
+              THEN g.difficulty * g.difficulty / ((LENGTH(g.history) - LENGTH(REPLACE(g.history, ',', '')) + 1))
+              ELSE NULL
+          END
+      )`, 
+      `avgScore`)
+    .addSelect(
+      `AVG(
          CASE WHEN g.current = g.target THEN CAST(g.earnedPoint AS DECIMAL(18,2)) ELSE NULL END
        )`,
       "avgEarnedPoint"
@@ -109,6 +118,12 @@ export class ProfileView {
    */
   @ViewColumn()
   avgTimeCost: number;
+
+  /**
+   * 平均得分
+   */
+  @ViewColumn()
+  avgScore: number;
 
   /**
    * 平均获得积分
