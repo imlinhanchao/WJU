@@ -110,6 +110,134 @@ export default class GameCore {
     return this.options;
   }
 
+  createByDifficulty(seed: number, targetDifficulty: number, tolerance: number = 0.5): IGame {
+    let text = 'W';
+    this.random = srand(seed);
+
+    // --- 初始化随机长度和字母 ---
+    const randLen = this.random(5) + 1;
+    const letters = ['J', 'U'];
+    for (let i = 0; i < randLen; i++) text += letters[this.random(2)];
+    const begin = text;
+
+    const beamWidth = 8;          // Beam 宽度
+    const MAX_STEPS = 200;        // 最大迭代步数
+    const MAX_LEN = 25;           // 字符串长度限制
+
+    type BeamNode = {
+      text: string;
+      difficulty: number;
+      diffToTarget: number;
+      lastOp: string | null;
+      doubleUsed: boolean;
+      operations: Array<(text: string) => string>; // 保存操作函数本身
+    };
+
+    let beam: BeamNode[] = [{
+      text,
+      difficulty: estimateDifficulty(text, 1.2),
+      diffToTarget: Math.abs(estimateDifficulty(text, 1.2) - targetDifficulty),
+      lastOp: null,
+      doubleUsed: false,
+      operations: []
+    }];
+
+    for (let step = 0; step < MAX_STEPS; step++) {
+      let candidates: BeamNode[] = [];
+
+      for (const node of beam) {
+        const fns = this.canUse(node.text, true, step);
+
+        for (const fn of fns) {
+          // double 概率限制：超过目标 75% 时 30% 概率允许
+          if (fn.name === "double" && (node.doubleUsed || node.difficulty > targetDifficulty * 0.75)) {
+            if (Math.random() > 0.3) continue;
+          }
+
+          const newText = fn(node.text);
+          if (newText.length > MAX_LEN) continue;
+
+          const newDifficulty = estimateDifficulty(newText, 1.2);
+          const diffToTarget = Math.abs(newDifficulty - targetDifficulty);
+
+          if (diffToTarget > 6 && step > 3) continue;
+
+          candidates.push({
+            text: newText,
+            difficulty: newDifficulty,
+            diffToTarget,
+            lastOp: fn.name,
+            doubleUsed: node.doubleUsed || fn.name === "double",
+            operations: [...node.operations, fn] // 保存操作函数
+          });
+        }
+      }
+
+      if (candidates.length === 0) break;
+
+      // 排序函数，score 越低越好，加入轻微随机扰动增加多样性
+      const score = (node: BeamNode) => {
+        let s = node.diffToTarget;
+
+        if (node.text.length > 15) s += (node.text.length - 15) * 0.15;
+        if (node.text.length > 20) s += (node.text.length - 20) * 0.3;
+
+        if (node.lastOp === 'double') s += 1.5;
+
+        // 误差惩罚
+        if (node.difficulty < targetDifficulty - tolerance) s += (targetDifficulty - tolerance - node.difficulty) * 2.0;
+        if (node.difficulty > targetDifficulty + tolerance) s += (node.difficulty - targetDifficulty - tolerance) * 2.0;
+
+        // 随机扰动
+        s += Math.random() * 0.2 - 0.1;
+
+        return s;
+      };
+
+      candidates.sort((a, b) => score(a) - score(b));
+
+      // 随机选 top beamWidth 节点增加多样性
+      const topCandidates = candidates.slice(0, beamWidth * 2);
+      beam = [];
+      while (beam.length < beamWidth && topCandidates.length > 0) {
+        const idx = Math.floor(Math.random() * topCandidates.length);
+        beam.push(topCandidates[idx]);
+        topCandidates.splice(idx, 1);
+      }
+
+      // 提前终止：找到满足容差的节点但继续保留随机性
+      const inTolerance = beam.find(n => n.diffToTarget <= tolerance);
+      if (inTolerance && step > 20) {
+        beam = [inTolerance];
+        break;
+      }
+    }
+
+    const best = beam[0];
+
+    // 打印最终操作序列
+    const operationsNames = best.operations.map(fn => fn.name);
+    console.log(`Need: ${targetDifficulty}, Final difficulty: ${best.difficulty}`);
+    console.log(`Operations sequence: ${operationsNames.join(' -> ')}`);
+
+    // 用保存的函数执行一次，保证当前值
+    let current = begin;
+    for (const fn of best.operations) {
+      current = fn(current);
+    }
+
+    this.options = {
+      source: begin,
+      target: best.text,
+      seed,
+      current,
+      history: [],
+      difficulty: best.difficulty
+    };
+
+    return this.options;
+  }
+
   get matchText() {
     if (!this.options.current) return '';
     let matchText = '';
@@ -239,7 +367,7 @@ export default class GameCore {
 
   async start(req: Request, res: Response) {
     const userId = req.session.user?.id;
-    const newGameData = this.create(Date.now());
+    const newGameData = this.createByDifficulty(Date.now(), 10);
     if (!userId) {
       return json(res, {
         ...newGameData,
