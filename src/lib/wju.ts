@@ -141,7 +141,7 @@ export default class WJU {
     const begin = text;
 
     const beamWidth = 8;          // Beam 宽度
-    const MAX_STEPS = 200;        // 最大迭代步数
+    const MAX_STEPS = 500;        // 最大迭代步数
     const MAX_LEN = 25;           // 字符串长度限制
 
     type BeamNode = {
