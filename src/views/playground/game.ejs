@@ -1,5 +1,105 @@
 <%- include('../header') %>
-      <main class="flex-1 flex flex-col justify-center items-center relative"></main>
+      <main class="flex-1 flex flex-col justify-center items-center relative">
+        <main class="flex-1 flex flex-col justify-center items-center relative">
+        <span v-if="error" class="error">{{ error }}</span>
+        <section v-if="current">
+          <span class="text-[5em]" v-for="(t, i) in current.split('')" :key="t + i">{{ t }}</span>
+        </section>
+        <section v-if="!current">
+          <button @click="startPlay()" class="bg-action-3 font-bold py-2 px-4 rounded">
+            <span>开始游戏</span>
+            <% if(locals.user){ -%><span>(100 points)</span><% } -%>
+          </button>
+        </section>
+        <section v-else class="text-4xl font-silk">
+          {{ current == matchText ? '==' : '!='}}
+        </section>
+        <section v-if="current" class="whitespace-pre-wrap w-full text-center px-5 break-all">
+          <span 
+            class="text-[3em]" 
+            :class="{ 'text-blue-500': t != '_', 'text-gray-500': t == '_' }" 
+            v-for="(t, i) in matchText.split('')" 
+            :key="t + i">
+            {{ t }}
+          </span>
+        </section>
+        <section v-if="current && current !== matchText" class="flex items-center justify-center">
+          <button 
+            @click="playAction('revoke')" 
+            aria-label="撤回操作"
+            :disabled="!history.length"
+            class="font-bold py-2 px-4 rounded m-2 font-mono text">
+            <span>↩</span>
+            <% if(locals.user){ -%><span>(10 points)</span><% } -%>
+          </button>
+          <button 
+            @click="playAction('restart')" 
+            aria-label="重新开始"
+            class="font-bold py-2 px-4 rounded m-2 font-mono text">
+            <span>↻</span>
+            <% if(locals.user){ -%><span>(100 points)</span><% } -%>
+          </button>
+        </section>
+        <span v-if="isWin" class="mt-20">
+          🎉 恭喜你！共使用了{{history.length}}步完成了推导！🎉
+        </span>
+        <p v-if="isWin">
+          <button 
+            @click="startPlay()" 
+            aria-label="再试一次"
+            class="font-bold py-2 px-4 rounded m-2 font-mono text">
+            <span>↻</span> 再试一次
+          </button>
+        </p>
+        <% if (locals.bestSteps || locals.allBestSteps) { %>
+        <p class="mt-4 text-sm italic text-[var(--btn-disabled-bg-color)]">
+          * 
+          <% if (locals.bestSteps) { %>
+            你的最佳记录：<strong><%= locals.bestSteps %></strong> 步。
+          <% } %>
+          <% if (locals.allBestSteps) { %>
+            全场最佳：<strong><%= locals.allBestSteps %></strong> 步。
+          <% } %>
+        </p>
+        <% } %>
+        <section v-if="current && !isWin" class="space-x-1 absolute bottom-[1em] gap-2 flex flex-wrap items-center justify-center">
+          <button 
+            @click="playAction('addJ')" 
+            class="bg-action-1 font-bold py-2 px-4 rounded" 
+            :disabled="!canAddJ">
+            + J
+          </button>
+          <button 
+            @click="playAction('addU')" 
+            class="bg-action-2 font-bold py-2 px-4 rounded" 
+            :disabled="!canAddU">
+            + U
+          </button>
+          <button
+            @click="playAction('double')" 
+            class="bg-action-3 font-bold py-2 px-4 rounded">
+            Wx => Wxx
+          </button>
+          <button
+            @click="playAction('lessJ')" 
+            class="bg-action-4 font-bold py-2 px-4 rounded" 
+            :disabled="!canLessJ">
+            JJJ => U
+          </button>
+          <button
+            @click="playAction('lessU')"
+            class="bg-action-5 font-bold py-2 px-4 rounded"
+            :disabled="!canLessU">
+            UUU => J
+          </button>
+        </section>
+      </main>
     </section>
   </section>
+  <script>
+    window.player = <%- JSON.stringify(locals.user || null) %>;
+    window.playgroundId = '<%- locals.playground?.id %>';
+    window.playRecord = <%- JSON.stringify(locals.playRecord || null) %>;
+  </script>
+
 <%- include('../footer') %>

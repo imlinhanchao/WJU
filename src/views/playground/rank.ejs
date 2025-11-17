@@ -1,3 +1,44 @@
 <%- include('../header') %>
-  <main class="flex-1 flex flex-col justify-center items-center relative"></main>
+      <main class="flex-1 flex flex-col overflow-auto items-center relative">
+        <header>
+          <h2 class="title">
+            <section>排行榜</section>
+          </h2>
+        </header>
+        <section id="rank">
+          <table class="m-auto text-center">
+            <thead class="sticky top-0 border-b border-dashed border-current bg-[var(--bg-color)]">
+              <tr>
+                <th class="th_number">排名</th>
+                <th class="th_name">用户名</th>
+                <th class="th_stage">步数</th>
+                <th class="th_date">耗时</th>
+              </tr>
+            </thead>
+            <tbody>
+<% for(let i = 0; i < ranks.length; i++) { -%>
+              <tr  <%- locals.user && ranks[i].username === locals.user.username && ranks[i].from === locals.user.from ? 'class="font-bold"' : '' %>>
+                <td class="p-2"><%= (i+1) %></td>
+                <td class="p-2">
+                  <a href="/u/<%= ranks[i].user.from %>/<%= ranks[i].user.username %>" class="inline-flex justify-center items-center gap-1">
+                    <svg width="1.5em" height="1.5em" class="inline-block">
+                      <use xlink:href="#icon-<%= {
+                        fishpi: 'fishpi',
+                        github: 'github',
+                        steam: 'steam'
+                      }[ranks[i].user.from] %>"></use>
+                    </svg>
+                    <span><%= ranks[i].user.nickname || ranks[i].user.username %></span>
+                  </a>
+                </td>
+                <td class="p-2"><%= ranks[i].steps %></td>
+                <td class="p-2"><%= ranks[i].cost %></td>
+              </tr>
+<% } -%>
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </section>
+  </section>
 <%- include('../footer') %>

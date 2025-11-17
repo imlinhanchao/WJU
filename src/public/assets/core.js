@@ -118,6 +118,34 @@ class GameCore {
       return rsp.data;
     });
   }
+
+  static playAction(id, action) {
+    return fetch(`/playground/game/${id}/action/${action}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
+
+  static playStart(id) {
+    return fetch(`/playground/game/${id}/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
 }
 
 function srand(seed){

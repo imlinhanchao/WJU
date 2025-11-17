@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { Router } from "express";
-import { PlaygroundRepo, PlayRecordRepo, UserRepo } from '@/entities';
+import { PlaygroundRepo, PlayRankRepo, PlayRecordRepo, UserRepo } from '@/entities';
 import { And, Equal, FindOptionsWhere, In, LessThan, Not, Or } from 'typeorm';
 import { error, json, render } from '@/utils/route';
 import { Playground } from '@/entities/Playground';
 import { PlayRecord } from '@/entities/PlayRecord';
 import WJU from '@/lib/wju';
 import { estimateDifficulty } from '@/lib/difficulty';
+import { shortTime } from '@/utils';
 
 const router = Router();
 
@@ -149,14 +150,25 @@ router.post("/game/:id/publish", async (req: Request, res: Response, next) => {
 });
 
 function getLastRecord(userId: string, playgroundId: number) {
-  return PlayRecordRepo.findOne({ 
-    where: {
-      userId,
-      playgroundId,
-      current: Not(Equal("target")),
-    },
-    order: { createTime: "DESC" },
-  });
+  return PlayRecordRepo.createQueryBuilder('pr')
+    .where('pr.userId = :userId', { userId })
+    .andWhere('pr.playgroundId = :playgroundId', { playgroundId })
+    .andWhere('pr.current <> pr.target')
+    .orderBy('pr.createTime', 'DESC')
+    .getOne();
+}
+
+function getBestRecord(userId: string, playgroundId: number) {
+  return userId ? PlayRecordRepo.createQueryBuilder('pr')
+    .where('pr.userId = :userId', { userId })
+    .andWhere('pr.playgroundId = :playgroundId', { playgroundId })
+    .andWhere('pr.current = pr.target')
+    .orderBy('pr.steps', 'ASC')
+    .getOne() : PlayRecordRepo.createQueryBuilder('pr')
+    .andWhere('pr.playgroundId = :playgroundId', { playgroundId })
+    .andWhere('pr.current = pr.target')
+    .orderBy('pr.steps', 'ASC')
+    .getOne();
 }
 
 router.get("/game/:id/edit", async (req: Request, res: Response, next) => {
@@ -185,8 +197,26 @@ router.get("/game/:id", async (req: Request, res: Response, next) => {
     if (!req.playground) {
       return next();
     }
+    if (!req.playground.isPublished) {
+      return next();
+    }
+    let playRecord = await getLastRecord(req.session.user!.id, req.playground.id);
+    let bestRecord = await getBestRecord(req.session.user!.id, req.playground.id);
+    let allBestRecord = await getBestRecord('', req.playground.id);
+
     render(res, "playground/game", req).title(`游乐场 - ${req.playground.source}`).render({
-      playground: req.playground,
+      playground: {
+        id: req.playground.id,
+        source: req.playground.source,
+        actions: [],
+      },
+      playRecord: playRecord ? {
+        current: playRecord.current,
+        history: playRecord.history,
+        matchText: new WJU(playRecord).matchText,
+      } : undefined,
+      bestSteps: bestRecord ? bestRecord.steps : undefined,
+      allBestSteps: allBestRecord ? allBestRecord.steps : undefined,
     });
   } catch (err) {
     render(res, "playground/game", req).title(`游乐场`).render({
@@ -204,10 +234,17 @@ router.post("/game/:id/start", async (req: Request, res: Response, next) => {
     let playRecord = await getLastRecord(req.session.user!.id, req.playground.id);
   
     if (!playRecord) {
-      playRecord = PlayRecordRepo.create(new PlayRecord(req.playground));
+      playRecord = new PlayRecord(req.playground);
+      playRecord.userId = req.session.user!.id;
+      playRecord.playgroundId = req.playground.id;
+      playRecord = PlayRecordRepo.create(playRecord);
       await PlayRecordRepo.save(playRecord);
     }
-    json(res, playRecord);
+    json(res, {
+      current: playRecord.current,
+      history: playRecord.history,
+      matchText: new WJU(playRecord).matchText,
+    });
   } catch (err) {
     error(res, "开始游戏失败: " + (err as Error).message);
   }
@@ -264,16 +301,49 @@ router.get("/game/:id/records", async (req: Request, res: Response, next) => {
         userId: req.session.user!.id,
         playgroundId: req.playground.id,
       },
-      order: { createTime: "DESC" },
+      order: { steps: "ASC", createTime: "DESC" },
     });
     render(res, "playground/records", req).title("游玩记录").render({
       playground: req.playground,
-      playRecords,
+      playRecords: playRecords.map(r => ({
+        ...r,
+        cost: shortTime(r.updatedTime - r.createTime),
+      })),
     });
   } catch (err) {
     render(res, "playground/records", req).title("游玩记录").render({
       playground: req.playground,
       playRecords: [],
+      error: "加载失败: " + (err as Error).message,
+    });
+  }
+});
+
+router.get("/game/:id/rank", async (req: Request, res: Response, next) => {
+  try {
+    if (!req.playground) {
+      return next();
+    }
+    const ranks = await PlayRankRepo.find({ 
+      where: {
+        playgroundId: req.playground.id,
+      },
+      order: { steps: "ASC", cost: "ASC" },
+    });
+    const userIds = Array.from(new Set(ranks.map(p => p.userId)));
+    const users = await UserRepo.find({ where: { id: In(userIds) } });
+    render(res, "playground/rank", req).title("Playground 排行榜").render({
+      playground: req.playground,
+      ranks: ranks.map(r => ({
+        ...r,
+        cost: shortTime(Number(r.cost)),
+        user: users.find(u => u.id === r.userId),
+      })),
+    });
+  } catch (err) {
+    render(res, "playground/rank", req).title("Playground 排行榜").render({
+      playground: req.playground,
+      ranks: [],
       error: "加载失败: " + (err as Error).message,
     });
   }

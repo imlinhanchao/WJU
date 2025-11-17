@@ -7,7 +7,13 @@
           @<a title="个人资料" href="/u/<%= user.from %>/<%= user.username %>"><%= user.nickname || user.username %></a>
 <% } -%>
         <span>|</span>
+<% if(locals.name !== 'playground/game'){ -%>
         <a href="/rank">排行榜</a>
+<% } else if(locals.playground?.id) {-%>
+        <a href="/playground/game/<%=locals.playground?.id-%>/records">历史记录</a>
+        <span>|</span>
+        <a href="/playground/game/<%=locals.playground?.id-%>/rank">排行榜</a> 
+<% } -%>
       </div>
 <% } -%>
       <p>&copy; <%= new Date().getFullYear() -%> <a href="https://wju.adventext.fun" target="_blank">WJU</a>. All rights reserved.</p>

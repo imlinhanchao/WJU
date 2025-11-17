@@ -17,6 +17,7 @@ import { PlayRecord } from './PlayRecord';
     .addSelect('p.difficulty', 'difficulty')
     .addSelect('p.createTime', 'createTime')
     .addSelect('p.updatedTime', 'updatedTime')
+    .addSelect('p.updatedTime - p.createTime', 'cost')
     .from(PlayRecord, 'p')
     .innerJoin(
       qb => qb
@@ -24,10 +25,11 @@ import { PlayRecord } from './PlayRecord';
         .addSelect('pr.playgroundId', 'playgroundId')
         .addSelect('MIN(pr.steps)', 'minSteps')
         .from(PlayRecord, 'pr')
+        .where('pr.current = pr.target')
         .groupBy('pr.userId')
         .addGroupBy('pr.playgroundId'),
       'm',
-      'm.userId = p.userId AND m.playgroundId = p.playgroundId AND p.steps = m.minSteps'
+      'm.userId = p.userId AND m.playgroundId = p.playgroundId AND p.steps = m.minSteps AND p.current = p.target'
     )
 })
 
@@ -67,4 +69,7 @@ export class PlayRankView {
 
   @ViewColumn()
   updatedTime: number;
+
+  @ViewColumn()
+  cost: number;
 }

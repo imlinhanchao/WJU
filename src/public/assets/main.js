@@ -162,6 +162,7 @@ Vue.createApp({
       return value;
     });
     watch(targetText, (newVal) => {
+      if (!newVal) return;
       current.value = playground.value.target = newVal;
     });
     async function gen(src = '', s = '') {
@@ -218,7 +219,34 @@ Vue.createApp({
       if (window.playground) {
         playground.value = window.playground;
       }
+      if (window.playRecord) {
+        current.value = window.playRecord.current;
+        history.value = window.playRecord.history;
+        match.value = window.playRecord.matchText;
+      }
     })
+
+    const playgroundId = ref(window.playgroundId || null);
+    const record = ref(window.playRecord || null);
+    async function startPlay() {
+      const playRecord = await GameCore.playStart(playgroundId.value);
+      record.value = playRecord;
+      current.value = playRecord.current;
+      history.value = playRecord.history;
+      match.value = playRecord.matchText;
+    }
+    async function playAction(action) {
+      const playRecord = await GameCore.playAction(playgroundId.value, action);
+      record.value = playRecord;
+      current.value = playRecord.current;
+      history.value = playRecord.history;
+      match.value = playRecord.matchText;
+    }
+
+    const viewHistorys = ref([]);
+    function view(historys) {
+      viewHistorys.value = historys.split(',');
+    }
 
     return {
       isDark,
@@ -249,6 +277,10 @@ Vue.createApp({
       canLessJ,
       canLessU,
       switchDarkMode,
+      startPlay,
+      playAction,
+      viewHistorys,
+      view,
     }
   }
 }).mount('#app');

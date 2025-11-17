@@ -46,11 +46,10 @@ export class PlayRecord implements IGame {
   updatedTime: number = Date.now();
 
   constructor(options?: Partial<IGame>) {
-    this.source = options?.source || '';
+    this.current = this.source = options?.source || '';
     this.target = options?.target || this.source;
     this.seed = options?.seed || Date.now();
     this.difficulty = options?.difficulty || 0;
-    this.current = options?.current || '';
     this.history = options?.history || [];
   }
 }

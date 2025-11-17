@@ -1,7 +1,43 @@
 <%- include('../header') %>
-  <main class="flex-1 grid grid-cols-5 gap-4 relative">
-    <div class="border border-current border-dashed rounded-lg">
-      + 制作谜题
-    </div>
-  </main>
+      <main class="flex-1 relative text-center">
+        <header class="mb-5">
+          <h2 class="title">
+            <section>闯关历史</section>
+          </h2>
+        </header>
+        <section>
+          <section class="flex flex-wrap justify-center items-center gap-2">
+            <% playRecords.forEach(function(record) { %>
+              <span 
+                <%-record.current != record.target ? 'aria-label="未完成"' : ''%>
+                class="cursor-pointer rounded-md bg-gray-500 bg-opacity-50 px-2 py-1" 
+                @click="view('<%=record.history.join(',')%>')">
+                <span class="<%=record.current != record.target ? 'text-action-3' : ''%>">
+                  <%= record.steps || record.history.length %> 步
+                  (<%= record.cost %>)
+                </span>
+              </span>
+            <% }) %>
+          </section>
+        </section>
+      </main>
+      <section v-if="viewHistorys.length" class="z-20 fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
+        <section class="flex flex-col p-5 bg-primary bg-opacity-90 rounded-lg shadow-light-100 dark:shadow-dark-100 shadow-lg max-w-[500px] w-full max-h-[95vh] space-y-2">
+          <h2 class="text-lg font-bold text-center relative pb-5">
+            <span class="font-bold text-lg">操作历史</span>
+            <button class="absolute right-0" @click="viewHistorys = []">X</button>
+          </h2>
+          <section class="flex flex-wrap justify-start items-center gap-1 flex-1">
+            <span 
+              v-for="(action, index) in viewHistorys" 
+              :key="action + index"
+            >
+              <span class="text-sm px-2 py-1 bg-gray-500 bg-opacity-50 rounded-md">{{ action }}</span>
+              <span v-if="index != viewHistorys.length -1"> => </span>
+            </span>
+          </section>
+        </section>
+      </section>
+    </section>
+  </section>
 <%- include('../footer') %>
