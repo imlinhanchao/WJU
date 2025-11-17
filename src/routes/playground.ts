@@ -160,14 +160,15 @@ function getLastRecord(userId: string, playgroundId: number) {
     .getOne();
 }
 
-function getBestRecord(userId: string, playgroundId: number) {
+function getBestRecord(userId: string, playground: Playground) {
   return userId ? PlayRecordRepo.createQueryBuilder('pr')
     .where('pr.userId = :userId', { userId })
-    .andWhere('pr.playgroundId = :playgroundId', { playgroundId })
+    .andWhere('pr.playgroundId = :playgroundId', { playgroundId: playground.id })
     .andWhere('pr.current = pr.target')
+    .andWhere(`pr.userId <> '${userId && playground.userId}'`)
     .orderBy('pr.steps', 'ASC')
     .getOne() : PlayRecordRepo.createQueryBuilder('pr')
-    .andWhere('pr.playgroundId = :playgroundId', { playgroundId })
+    .andWhere('pr.playgroundId = :playgroundId', { playgroundId: playground.id })
     .andWhere('pr.current = pr.target')
     .orderBy('pr.steps', 'ASC')
     .getOne();
@@ -203,8 +204,7 @@ router.get("/game/:id", async (req: Request, res: Response, next) => {
       return next();
     }
     let playRecord = await getLastRecord(req.session.user!.id, req.playground.id);
-    let bestRecord = await getBestRecord(req.session.user!.id, req.playground.id);
-    let allBestRecord = await getBestRecord('', req.playground.id);
+    let bestRecord = await getBestRecord(req.session.user!.id, req.playground);
 
     render(res, "playground/game", req).title(`游乐场 - ${req.playground.source}`).render({
       playground: {
@@ -218,7 +218,7 @@ router.get("/game/:id", async (req: Request, res: Response, next) => {
         matchText: new WJU(playRecord).matchText,
       } : undefined,
       bestSteps: bestRecord ? bestRecord.steps : undefined,
-      allBestSteps: allBestRecord ? allBestRecord.steps : undefined,
+      allBestSteps: req.playground.bestRecord || undefined,
     });
   } catch (err) {
     render(res, "playground/game", req).title(`游乐场`).render({
@@ -272,7 +272,8 @@ router.post("/game/:id/action/:action", async (req: Request, res: Response, next
       game.options.history = [];
     } else if (await game.doAction(action)) {
       playRecord.steps = playRecord.history.length;
-      if (req.playground.bestRecord === 0 || playRecord.steps < req.playground.bestRecord) {
+      if (req.playground.userId !== req.session.user!.id && 
+        (req.playground.bestRecord === 0 || playRecord.steps < req.playground.bestRecord)) {
         req.playground.bestRecord = playRecord.steps;
         await PlaygroundRepo.save(req.playground);
       }
@@ -329,6 +330,7 @@ router.get("/game/:id/rank", async (req: Request, res: Response, next) => {
     const ranks = await PlayRankRepo.find({ 
       where: {
         playgroundId: req.playground.id,
+        userId: Not(req.playground.userId),
       },
       order: { steps: "ASC", cost: "ASC" },
     });
