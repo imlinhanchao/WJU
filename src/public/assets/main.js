@@ -185,6 +185,18 @@ Vue.createApp({
       playground.value.actions.splice(index, 1);
     }
     async function save() {
+      if (playground.value.actions.length === 0) {
+        error.value = '请至少添加一个操作';
+        return;
+      }
+      if (playground.value.source.length > 254) {
+        error.value = '起始过长，不能超过 254 个字符';
+        return;
+      }
+      if (playground.value.target.length > 254) {
+        error.value = '目标过长，不能超过 254 个字符';
+        return;
+      }
       const gameData = { ...playground.value };
       const data = await GameCore.save(gameData).catch(err => {
         error.value = err.message;
