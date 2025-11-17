@@ -11,10 +11,12 @@ import { shortTime } from '@/utils';
 
 const router = Router();
 
-async function getPlaygrounds(userId: string, createTime: number = Date.now(), count: number = 20) {
+async function getPlaygrounds(userId: string, createTime: number = Date.now(), count: number = 20, draft: boolean = false) {
   const playgrounds = await PlaygroundRepo.find({
     // where createTime < createTime AND (isPublished = true OR userId = userId)
-    where: [
+    where: draft ? [
+      { createTime: LessThan(createTime), userId },
+    ] : [
       { createTime: LessThan(createTime), isPublished: true },
       { createTime: LessThan(createTime), userId },
     ],
@@ -47,7 +49,7 @@ router.get("/draft", async (req: Request, res: Response) => {
   const createTime = Number(req.query.createTime as string || Date.now());
   const count = req.query.count ? parseInt(req.query.count as string) : 20;
   render(res, "playground/index", req).title("WJU 游乐场草稿").render({
-    playgrounds: await getPlaygrounds(req.session.user?.id || '', createTime, count),
+    playgrounds: await getPlaygrounds(req.session.user?.id || '', createTime, count, true),
   });
 });
 

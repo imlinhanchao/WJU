@@ -9,6 +9,8 @@
         <span>|</span>
 <% if(locals.name !== 'playground/game'){ -%>
         <a href="/rank">排行榜</a>
+        <span>|</span>
+        <a href="/playground">游乐场</a>
 <% } else if(locals.playground?.id) {-%>
         <a href="/playground/game/<%=locals.playground?.id-%>/records">历史记录</a>
         <span>|</span>
