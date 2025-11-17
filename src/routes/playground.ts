@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Router } from "express";
 import { PlaygroundRepo, PlayRecordRepo, UserRepo } from '@/entities';
-import { Equal, In, LessThan, Not } from 'typeorm';
+import { And, Equal, FindOptionsWhere, In, LessThan, Not, Or } from 'typeorm';
 import { error, json, render } from '@/utils/route';
 import { Playground } from '@/entities/Playground';
 import { PlayRecord } from '@/entities/PlayRecord';
@@ -10,10 +10,14 @@ import { estimateDifficulty } from '@/lib/difficulty';
 
 const router = Router();
 
-async function getPlaygrounds(createTime: number, count: number = 20) {
+async function getPlaygrounds(userId: string, createTime: number = Date.now(), count: number = 20) {
   const playgrounds = await PlaygroundRepo.find({
-    where: createTime ? { createTime: LessThan(createTime) } : {},
-    order: { createTime: "DESC" },
+    // where createTime < createTime AND (isPublished = true OR userId = userId)
+    where: [
+      { createTime: LessThan(createTime), isPublished: true },
+      { createTime: LessThan(createTime), userId },
+    ],
+    order: { isPublished: "ASC", createTime: "DESC" },
     take: count,
   });
   const userIds = Array.from(new Set(playgrounds.map(p => p.userId)));
@@ -30,7 +34,7 @@ router.get("/", async (req: Request, res: Response) => {
   const createTime = Number(req.query.createTime as string || Date.now());
   const count = req.query.count ? parseInt(req.query.count as string) : 20;
   render(res, "playground/index", req).title("WJU 游乐场").render({
-    playgrounds: await getPlaygrounds(createTime, count),
+    playgrounds: await getPlaygrounds(req.session.user?.id || '', createTime, count),
   });
 });
 
@@ -42,14 +46,14 @@ router.get("/draft", async (req: Request, res: Response) => {
   const createTime = Number(req.query.createTime as string || Date.now());
   const count = req.query.count ? parseInt(req.query.count as string) : 20;
   render(res, "playground/index", req).title("WJU 游乐场草稿").render({
-    playgrounds: await getPlaygrounds(createTime, count),
+    playgrounds: await getPlaygrounds(req.session.user?.id || '', createTime, count),
   });
 });
 
 router.get("/list", async (req: Request, res: Response) => {
   const createTime = Number(req.query.createTime as string || Date.now());
   const count = req.query.count ? parseInt(req.query.count as string) : 20;
-  json(res, await getPlaygrounds(createTime, count));
+  json(res, await getPlaygrounds(req.session.user?.id || '', createTime, count));
 });
 
 router.use("/game", (req: Request, res: Response, next) => {
@@ -107,7 +111,8 @@ router.put("/game/:id", async (req: Request, res: Response, next) => {
       return error(res, "无权限操作");
     }
     PlaygroundRepo.merge(req.playground, req.body);
-    json(res, await PlaygroundRepo.update({ id: req.playground.id }, req.playground));
+    await PlaygroundRepo.update({ id: req.playground.id }, req.playground)
+    json(res, req.playground);
   } catch (err) {
     error(res, "更新失败: " + (err as Error).message);
   }
@@ -136,7 +141,8 @@ router.post("/game/:id/publish", async (req: Request, res: Response, next) => {
       return error(res, "无权限操作");
     }
     req.playground.isPublished = true;
-    json(res, await PlaygroundRepo.update({ id: req.playground.id }, req.playground));
+    await PlaygroundRepo.update({ id: req.playground.id }, req.playground)
+    json(res, req.playground);
   } catch (err) {
     error(res, "发布失败: " + (err as Error).message);
   }
@@ -160,6 +166,9 @@ router.get("/game/:id/edit", async (req: Request, res: Response, next) => {
     }
     if (req.playground.userId !== req.session.user?.id) {
       return error(res, "无权限操作");
+    }
+    if (req.playground.isPublished) {
+      return res.redirect(`/playground/game/${req.playground.id}`);
     }
     render(res, "playground/create", req).title(`游乐场 - 更新`).render({
       playground: req.playground,

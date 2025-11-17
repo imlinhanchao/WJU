@@ -189,8 +189,16 @@ Vue.createApp({
       const data = await GameCore.save(gameData).catch(err => {
         error.value = err.message;
       });
-      if (data) {
+      if (data && !gameData.id) {
         location.href = `/playground/game/${data.id}/edit`;
+      }
+    }
+    async function publish() {
+      const data = await GameCore.publish(playground.value.id).catch(err => {
+        error.value = err.message;
+      });
+      if (data) {
+        location.href = `/playground/game/${data.id}`;
       }
     }
 
@@ -212,6 +220,7 @@ Vue.createApp({
       playground,
       actionText,
       save,
+      publish,
       addAction,
       removeSource,
       revokeAction,

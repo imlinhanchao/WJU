@@ -3,5 +3,26 @@
     <a href="/playground/create" class="border border-current border-dashed rounded-lg h-[10em] flex items-center justify-center cursor-pointer">
       + 制作谜题
     </a>
+<% playgrounds.forEach(function(playground) { %>
+    <a 
+      href="/playground/game/<%= playground.id %><%= playground.isPublished ? '' : '/edit' %>" 
+      class="relative border border-[var(--action-3-color)] rounded-lg h-[10em] flex items-center justify-center cursor-pointer">
+      <span class="text-center px-2 break-words">
+        <p class="text-[3em] text-action-3"><%= playground.source %></p>
+        <p class="text-right absolute bottom-1 right-2 flex items-center gap-1 justify-end">
+<% if (playground.isPublished) { %>
+          <svg width="1.5em" height="1.5em" class="inline-block">
+            <use xlink:href="#icon-<%= {
+              fishpi: 'fishpi',
+              github: 'github',
+              steam: 'steam'
+            }[playground.user.from] %>"></use>
+          </svg>
+<% } %>
+          <%= playground.isPublished ? playground.user.username : '[草稿]' %>
+        </p>
+      </span>
+    </a>
+<% }); %>
   </main>
 <%- include('../footer') %>

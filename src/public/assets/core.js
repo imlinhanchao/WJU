@@ -104,6 +104,20 @@ class GameCore {
       return rsp.data;
     });
   }
+
+  static publish(id) {
+    return fetch(`/playground/game/${id}/publish`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
 }
 
 function srand(seed){
