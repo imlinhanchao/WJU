@@ -1,33 +1,35 @@
 <%- include('header') %>
-  <section class="space-y-2 w-full flex justify-center items-center h-full space-y-2 flex-col">
-    <section class="text-center gap-3 inline-flex justify-center items-center flex-col">
-      <a href="login/fishpi" class="w-full inline-flex px-3 py-2 rounded-[4em] bg-[#f0d35e] hover:bg-[#e6c94f] items-center space-x-2">
-        <svg width="3em" height="3em">
-          <use xlink:href="#icon-fishpi"></use>
-        </svg>
-				<span class="text-black font-bold text-[1.5em] flex-1 block text-justify">摸 鱼 派 登 录</span>
-      </a>
-      <% if (locals.config.login.githubClientId && locals.config.login.githubClientSecret) { -%>
-      <a href="login/github" class="w-full inline-flex px-3 py-2 rounded-[4em] text-[--code-bg-color] bg-[var(--text-color)] hover:bg-[var(--code-text-color)] items-center space-x-2">
-        <svg width="3em" height="3em">
-          <use xlink:href="#icon-github"></use>
-        </svg>
-				<span class="font-bold text-[1.5em] flex-1 block text-justify">GitHub 登 录</span>
-      </a>
-      <% } -%>
-      <% if (locals.config.login.steamApiKey) { -%>
-      <a href="login/steam" class="w-full inline-flex px-3 py-2 rounded-[4em] text-[#ffffff] bg-[#0d2150] hover:bg-[#134376] items-center space-x-2">
-        <svg width="3em" height="3em">
-          <use xlink:href="#icon-steam"></use>
-        </svg>
-				<span class="font-bold text-[1.5em] flex-1 block text-justify"> Steam 登 录</span>
-      </a>
-      <% } -%>
+      <section class="space-y-2 w-full flex justify-center items-center h-full space-y-2 flex-col">
+        <section class="text-center gap-3 inline-flex justify-center items-center flex-col">
+          <a href="login/fishpi" class="w-full inline-flex px-3 py-2 rounded-[4em] bg-[#f0d35e] hover:bg-[#e6c94f] items-center space-x-2">
+            <svg width="3em" height="3em">
+              <use xlink:href="#icon-fishpi"></use>
+            </svg>
+            <span class="text-black font-bold text-[1.5em] flex-1 block text-justify">摸 鱼 派 登 录</span>
+          </a>
+          <% if (locals.config.login.githubClientId && locals.config.login.githubClientSecret) { -%>
+          <a href="login/github" class="w-full inline-flex px-3 py-2 rounded-[4em] text-[--code-bg-color] bg-[var(--text-color)] hover:bg-[var(--code-text-color)] items-center space-x-2">
+            <svg width="3em" height="3em">
+              <use xlink:href="#icon-github"></use>
+            </svg>
+            <span class="font-bold text-[1.5em] flex-1 block text-justify">GitHub 登 录</span>
+          </a>
+          <% } -%>
+          <% if (locals.config.login.steamApiKey) { -%>
+          <a href="login/steam" class="w-full inline-flex px-3 py-2 rounded-[4em] text-[#ffffff] bg-[#0d2150] hover:bg-[#134376] items-center space-x-2">
+            <svg width="3em" height="3em">
+              <use xlink:href="#icon-steam"></use>
+            </svg>
+            <span class="font-bold text-[1.5em] flex-1 block text-justify"> Steam 登 录</span>
+          </a>
+          <% } -%>
+        </section>
+        <% if (locals.message){ -%>
+          <p class="<%= type -%> message">
+            <%= message -%>
+          </p>
+        <% } -%>
+      </section>
     </section>
-    <% if (locals.message){ -%>
-      <p class="<%= type -%> message">
-        <%= message -%>
-      </p>
-    <% } -%>
   </section>
 <%- include('footer') %>

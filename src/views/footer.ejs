@@ -1,44 +1,18 @@
-
-      <footer class="text-center space-y-2 py-5 opacity-30">
-        <% if (!['config', 'register', 'login'].includes(locals.name)){ -%>
-        <div id="userinfo" class="space-x-2">
-        <% if(!locals.user){ -%>
-            <a href="/login" id="login">登录</a>
-        <% }else{ -%>
-            @<a title="个人资料" href="/u/<%= user.from %>/<%= user.username %>"><%= user.nickname || user.username %></a>
-        <% } -%>
-          <span>|</span>
-          <a href="/rank">排行榜</a>
-        </div>
-        <% } -%>
-        <p>&copy; <%= new Date().getFullYear() -%> <a href="https://wju.adventext.fun" target="_blank">WJU</a>. All rights reserved.</p>
-      </footer>
-    </section>
+    <footer class="text-center space-y-2 py-5 opacity-30">
+<% if (!['config', 'register', 'login'].includes(locals.name)){ -%>
+      <div id="userinfo" class="space-x-2">
+<% if(!locals.user){ -%>
+          <a href="/login" id="login">登录</a>
+<% }else{ -%>
+          @<a title="个人资料" href="/u/<%= user.from %>/<%= user.username %>"><%= user.nickname || user.username %></a>
+<% } -%>
+        <span>|</span>
+        <a href="/rank">排行榜</a>
+      </div>
+<% } -%>
+      <p>&copy; <%= new Date().getFullYear() -%> <a href="https://wju.adventext.fun" target="_blank">WJU</a>. All rights reserved.</p>
+    </footer>
   </article>
-  <% if (locals.name === 'index') { -%>
-  <script>
-    window.gamData = {
-      matchText: '<%= locals.matchText %>',
-      target: '<%= locals.target %>',
-      current: '<%= locals.current %>',
-      history: <%- JSON.stringify(locals.history || []) %>,
-      earnedPoint: <%- JSON.stringify(locals.earnedPoint || 0) %>,
-    };
-    window.player = <%- JSON.stringify(locals.user || null) %>;
-    if (!window.player) {
-      const savedData = localStorage.getItem('gameData');
-      if (savedData) {
-        try {
-          const gameData = JSON.parse(savedData);
-          if (gameData.current && gameData.target)
-            window.gamData = gameData;
-        } catch (e) {
-          console.error('Failed to parse saved game data:', e);
-        }
-      }
-    }
-  </script>
-  <% } -%>
 </body>
 <script>initDarkMode();</script>
 <script src="https://cdn.tailwindcss.com"></script>

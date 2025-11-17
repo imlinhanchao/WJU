@@ -1,5 +1,6 @@
 import 'express-session';
 import { User } from '../src/entities/User';
+import { Playground } from '@/entities/Playground';
 
 declare module 'express-session' {
   interface SessionData {
@@ -12,6 +13,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: User;
+      playground?: Playground;
     }
   }
 }

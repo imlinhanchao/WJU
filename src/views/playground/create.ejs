@@ -1,0 +1,135 @@
+<%- include('../header') %>
+      <main class="flex-1 flex flex-col justify-center items-center relative">
+        <span v-if="error" class="error">{{ error }}</span>
+        <header class="space-x-2 flex items-center justify-center mb-5">
+          <span class="group">
+            <button 
+              @click="playground.source += 'J'" 
+              class="bg-action-1 font-bold py-2 px-4 rounded text-base"
+              :disabled="playground.source.length == 255"
+            >
+              J
+            </button>
+            <button 
+              @click="playground.source += 'U'" 
+              class="bg-action-2 font-bold py-2 px-4 rounded text-base" 
+              :disabled="playground.source.length == 255"
+            >
+              U
+            </button>
+          </span>
+          <button 
+            @click="gen()" 
+            class="bg-action-3 space-x-2 font-bold py-2 px-4 rounded whitespace-nowrap inline-flex items-center text-base" 
+          >
+            <svg width="1em" height="1em">
+              <use xlink:href="#icon-gen"></use>
+            </svg>
+            <span>随机生成</span>
+          </button>
+          <span class="group">
+            <input v-model="playground.seed" type="number" placeholder="种子" class="outline-none text-base rounded-lg px-2 py-2.5 inline-block w-[15em] text-center h-full"/>
+            <button  
+              @click="gen(playground.source, playground.seed)"
+              class="bg-action-5 font-bold py-2 px-4 rounded text-base inline-flex items-center space-x-2" 
+            >
+              <svg width="1em" height="1em">
+                <use xlink:href="#icon-gen"></use>
+              </svg>
+              <span>生成</span>
+            </button>
+          </span>
+          <button
+            v-if="playground.id"
+            @click="publish" 
+            class="bg-action-4 font-bold py-2 px-4 rounded text-base inline-flex items-center space-x-2" 
+          >
+            <span>发布</span>
+          </button>
+        </header>
+        <main class="text-center">
+          <section>
+            <span class="text-[5em] relative group" @click="removeSource(i)" v-for="(t, i) in playground.source.split('')" :key="t + i">
+              <span>{{ t }}</span>
+              <span 
+                v-if="i > 0"
+                class="rounded-full leading-4 px-1 z-10 text-xl cursor-pointer absolute top-[0.5em] -right-[0.5em] bg-action-3 font-mono group-hover:inline hidden" 
+                @click="removeSource(i)"
+              >
+                ×
+              </span>
+            </span>
+          </section>
+          <section v-if="playground.target" class="text-4xl font-silk">
+            ==
+          </section>
+          <section v-if="playground.source" class="whitespace-pre-wrap w-full text-center px-5 break-all">
+            <span class="text-[3em] text-blue-500">
+              {{ playground.target }}
+            </span>
+          </section>
+        </main>
+        <section v-if="playground.source" class="space-x-1 absolute bottom-[1em]">
+          <section class="flex whitespace-nowrap items-center justify-end overflow-hidden pr-2 pt-2 max-w-[20em] relative space-x-3">
+            <section class="absolute z-10 bottom-0 top-0 left-0 w-2/3 from-[var(--bg-color)] to-transparent pointer-events-none" style="background-image: linear-gradient(to right, var(--tw-gradient-stops));"></section>
+            <span 
+              class="text-sm px-2 py-1 bg-gray-500 bg-opacity-50 rounded-md relative group" 
+              :class="{ 'font-bold': index == playground.actions.length -1 }"
+              v-for="(action, index) in playground.actions" 
+              :key="action + index"
+              >
+              <span class="text-sm">{{ actionText[action] }}</span>
+              <span class="rounded-md cursor-pointer absolute -top-[0.5em] -right-[0.2em] text-action-3 font-mono group-hover:inline hidden" @click="revokeAction(index)">×</span>
+            </span>
+          </section>
+          <section class="flex flex-wrap items-center justify-center gap-2">
+            <button 
+              @click="save" 
+              aria-label="保存"
+              class="font-bold py-2 px-4 rounded m-2 text">
+              <span>💾</span>
+            </button>
+            <button 
+              @click="addAction('addJ')" 
+              class="bg-action-1 font-bold py-2 px-4 rounded" 
+              :disabled="!canAddJ">
+              + J
+            </button>
+            <button 
+              @click="addAction('addU')" 
+              class="bg-action-2 font-bold py-2 px-4 rounded" 
+              :disabled="!canAddU">
+              + U
+            </button>
+            <button
+              @click="addAction('double')" 
+              class="bg-action-3 font-bold py-2 px-4 rounded">
+              Wx => Wxx
+            </button>
+            <button
+              @click="addAction('lessJ')" 
+              class="bg-action-4 font-bold py-2 px-4 rounded" 
+              :disabled="!canLessJ">
+              JJJ => U
+            </button>
+            <button
+              @click="addAction('lessU')" 
+              class="bg-action-5 font-bold py-2 px-4 rounded"
+              :disabled="!canLessU">
+              UUU => J
+            </button>
+            <button 
+              @click="revokeAction(playground.actions.length -1)" 
+              aria-label="撤回"
+              class="font-bold py-2 px-4 rounded m-2 font-mono text">
+              <span>↩</span>
+            </button>
+          </section>
+        </section>
+      </main>
+    </section>
+  </section>
+  <script>
+    window.playground = <%- JSON.stringify(locals.playground || null) %>;
+  </script>
+<%- include('../footer') %>

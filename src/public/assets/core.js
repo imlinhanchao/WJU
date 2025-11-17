@@ -11,7 +11,7 @@ class GameCore {
       },
     }).then(res => res.json()).then(rsp => {
       if (rsp.code) {
-        throw new Error(rsp.msg);
+        throw new Error(rsp.message);
       }
       return rsp.data;
     });
@@ -59,7 +59,7 @@ class GameCore {
       },
     }).then(res => res.json()).then(rsp => {
       if (rsp.code) {
-        throw new Error(rsp.msg);
+        throw new Error(rsp.message);
       }
       return rsp.data;
     });
@@ -73,7 +73,33 @@ class GameCore {
       },
     }).then(res => res.json()).then(rsp => {
       if (rsp.code) {
-        throw new Error(rsp.msg);
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
+
+  static generate(source='', seed='') {
+    return fetch(`/playground/game/gen?source=${source}&seed=${seed}`, {
+      method: 'GET',
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
+
+  static save(data) {
+    return fetch(data.id ? `/playground/game/${data.id}` : '/playground/game', {
+      method: data.id ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
       }
       return rsp.data;
     });

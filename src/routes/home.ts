@@ -6,6 +6,7 @@ import Game from "../lib/core";
 import ApiRouter from "./api";
 import LoginRouter from "./login";
 import ProfileRouter from "./profile";
+import PlayRouter from "./playground";
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.get("/rank", async (req: Request, res: Response) => {
   })
   return render(res, "rank", req).title(`排行榜`).render({ ranks })
 });
+router.use("/playground", PlayRouter);
 router.get("/", (req: Request, res: Response) => new Game().run(req, res));
 
 export default router;

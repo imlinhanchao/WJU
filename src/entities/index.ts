@@ -2,7 +2,10 @@ import 'reflect-metadata';
 import { EventSubscriber, EntitySubscriberInterface, InsertEvent, UpdateEvent, DataSource, Repository } from 'typeorm';
 import { User } from "./User";
 import { Game } from "./Game";
+import { PlayRecord } from "./PlayRecord";
+import { Playground } from "./Playground";
 import { ProfileView } from "./Profile";
+import { PlayRankView } from './PlayRank';
 import utils from '../utils'
 
 @EventSubscriber()
@@ -31,7 +34,7 @@ export const AppDataSource = utils.config ? new DataSource({
   logging: false,
   ...utils.config.database,
   synchronize: true,
-  entities: [User, Game, ProfileView],
+  entities: [User, Game, PlayRecord, Playground, ProfileView, PlayRankView],
   migrations: [],
   subscribers: [],
   charset: "utf8mb4_unicode_ci"
@@ -43,4 +46,7 @@ export {
 
 export const UserRepo = utils.config ? AppDataSource.getRepository(User) : {} as Repository<User>;
 export const GameRepo = utils.config ? AppDataSource.getRepository(Game) : {} as Repository<Game>;
+export const PlaygroundRepo = utils.config ? AppDataSource.getRepository(Playground) : {} as Repository<Playground>;
+export const PlayRecordRepo = utils.config ? AppDataSource.getRepository(PlayRecord) : {} as Repository<PlayRecord>;
 export const ProfileRepo = utils.config ? AppDataSource.getRepository(ProfileView) : {} as Repository<ProfileView>;
+export const PlayRankRepo = utils.config ? AppDataSource.getRepository(PlayRankView) : {} as Repository<PlayRankView>;

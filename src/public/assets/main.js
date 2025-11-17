@@ -3,7 +3,7 @@ Vue.createApp({
     const { ref, computed, watch, onMounted } = Vue;
     const error = ref('');
     const current = ref(window.gamData?.current || '');
-    const target = ref(window.gamData?.target);
+    const target = ref(window.gamData?.target || 'W');
     const match = ref(window.gamData?.matchText || '');
     const history = ref(window.gamData?.history || []);
     const earnPoint = ref(window.gamData?.earnedPoint || 0);
@@ -116,6 +116,7 @@ Vue.createApp({
 
     onMounted(() => {
       initDarkMode(darkMode.value);
+      document.getElementById('loading').style.display = 'none';
     });
 
     const darkMode = ref(localStorage.getItem('vueuse-color-scheme') || 'auto');
@@ -141,6 +142,63 @@ Vue.createApp({
       localStorage.setItem('gameData', JSON.stringify(gameData));
     }
 
+    const actionText = {
+      addJ: '+J',
+      addU: '+U',
+      lessJ: 'JJJ => U',
+      lessU: 'UUU => J',
+      double: 'Wx => Wxx',
+    }
+    const playground = ref({
+      source: 'W',
+      target: 'W',
+      actions: [],
+    })
+    const targetText= computed(() => {
+      let value = playground.value.source;
+      playground.value.actions.forEach(action => {
+        value = GameCore[action](value);
+      });
+      return value;
+    });
+    watch(targetText, (newVal) => {
+      current.value = playground.value.target = newVal;
+    });
+    async function gen(src = '', s = '') {
+      try {
+        const result = await GameCore.generate(src, s);
+        playground.value.source = result.source;
+        playground.value.seed = result.seed;
+        playground.value.actions = result.actions;
+        error.value = '';
+      } catch (error) {
+        error.value = error.message;
+      }
+    }
+    function addAction(action) {
+      playground.value.actions.push(action);
+    }
+    function removeSource(index) {
+      playground.value.source = playground.value.source.slice(0, index) + playground.value.source.slice(index + 1);
+    }
+    function revokeAction(index) {
+      playground.value.actions.splice(index, 1);
+    }
+    async function save() {
+      const gameData = { ...playground.value };
+      const data = await GameCore.save(gameData).catch(err => {
+        error.value = err.message;
+      });
+      if (data) {
+        location.href = `/playground/game/${data.id}/edit`;
+      }
+    }
+
+    onMounted(() => {
+      if (window.playground) {
+        playground.value = window.playground;
+      }
+    })
 
     return {
       isDark,
@@ -151,6 +209,13 @@ Vue.createApp({
       matchText,
       earnPoint,
       isWin,
+      playground,
+      actionText,
+      save,
+      addAction,
+      removeSource,
+      revokeAction,
+      gen,
       startGame,
       addJ,
       addU,

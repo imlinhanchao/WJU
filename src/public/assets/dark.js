@@ -1,4 +1,4 @@
-const isDarkModeInSystem = window.matchMedia("(prefers-color-scheme: dark)").matches;
+var isDarkModeInSystem = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
 function initDarkMode(darkMode = localStorage.getItem('vueuse-color-scheme') || 'auto') {
   const body = document.body;
