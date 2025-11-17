@@ -141,7 +141,7 @@ export default class WJU {
     const begin = text;
 
     const beamWidth = 8;          // Beam 宽度
-    const MAX_STEPS = 200;        // 最大迭代步数
+    const MAX_STEPS = 1000;        // 最大迭代步数
     const MAX_LEN = 25;           // 字符串长度限制
 
     type BeamNode = {
@@ -180,7 +180,8 @@ export default class WJU {
           const newDifficulty = estimateDifficulty(newText, 1.2);
           const diffToTarget = Math.abs(newDifficulty - targetDifficulty);
 
-          if (diffToTarget > 6 && step > 3) continue;
+          const maxAllowDiff = 3 + targetDifficulty * targetDifficulty * 2.732;
+          if (step > 32 && diffToTarget > maxAllowDiff) continue;
 
           candidates.push({
             text: newText,
