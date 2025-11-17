@@ -250,7 +250,7 @@ export default class WJU {
       source: begin,
       target: best.text,
       seed,
-      current,
+      current: begin,
       history: [],
       difficulty: best.difficulty
     };

@@ -7,13 +7,16 @@ Vue.createApp({
     const match = ref(window.gamData?.matchText || '');
     const history = ref(window.gamData?.history || []);
     const earnPoint = ref(window.gamData?.earnedPoint || 0);
+    const difficulty = ref(window.gamData?.difficulty || null);
     async function startGame() {
-      const { source: begin, target: end, matchText } = await GameCore.start();
+      const difficult = Number(new URLSearchParams(window.location.search).get('difficulty') || '0');
+      const { source: begin, target: end, matchText, difficulty: gameDifficulty } = await GameCore.start(difficult);
       console.log(`Game started: `, begin, '=>', end);
       current.value = begin;
       target.value = end;
       history.value = [];
       match.value = matchText;
+      if (difficult) difficulty.value = gameDifficulty || null;
       save();
     }
 
@@ -185,7 +188,7 @@ Vue.createApp({
     function revokeAction(index) {
       playground.value.actions.splice(index, 1);
     }
-    async function save() {
+    async function savePlayground() {
       if (playground.value.actions.length === 0) {
         error.value = '请至少添加一个操作';
         return;
@@ -253,13 +256,14 @@ Vue.createApp({
       error,
       help,
       history,
+      difficulty,
       current,
       matchText,
       earnPoint,
       isWin,
       playground,
       actionText,
-      save,
+      save: savePlayground,
       publish,
       addAction,
       removeSource,

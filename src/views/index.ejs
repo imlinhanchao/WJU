@@ -7,7 +7,7 @@
         <section v-if="!current">
           <button @click="startGame" class="bg-action-3 font-bold py-2 px-4 rounded">
             <span>开始游戏</span>
-            <% if(locals.user){ -%><span>(100 points)</span><% } -%>
+            <% if(locals.user){ -%><span>(<%=locals.query.difficulty ? 200 : 100 %> points)</span><% } -%>
           </button>
         </section>
         <section v-else class="text-4xl font-silk">
@@ -36,7 +36,7 @@
             aria-label="重新开始"
             class="font-bold py-2 px-4 rounded m-2 font-mono text">
             <span>↻</span>
-            <% if(locals.user){ -%><span>(100 points)</span><% } -%>
+            <% if(locals.user){ -%><span>(<%=locals.query.difficulty ? 200 : 100 %> points)</span><% } -%>
           </button>
         </section>
         <% if(locals.user) { %>
@@ -56,6 +56,11 @@
           </button>
         </p>
         <% } -%>
+        <% if (locals.query.difficulty) { %>
+        <p v-if="difficulty" class="mt-4 text-sm italic text-[var(--btn-disabled-bg-color)]">
+          * 当前难度：{{ difficulty }}
+        </p>
+        <% } %>
         <section v-if="current && !isWin" class="space-x-1 absolute bottom-[1em] gap-2 flex flex-wrap items-center justify-center">
           <button 
             @click="addJ" 
@@ -92,6 +97,7 @@
   </section>
   <script>
     window.gamData = {
+      <% if (locals.query.difficulty) { %>difficulty: <%- JSON.stringify(locals.difficulty || null) %>, <% } %>
       matchText: '<%= locals.matchText %>',
       target: '<%= locals.target %>',
       current: '<%= locals.current %>',
