@@ -158,7 +158,9 @@ export default class GameCore extends WJU {
   async run(req: Request, res: Response) {
     const userId = req.session.user?.id;
     if (!userId) {
-      return render(res, "index", req).render();
+      return render(res, "index", req).render({
+        difficult: req.path.includes('difficult')
+      });
     }
     const currentGame = await this.getTodayGame(userId);
     if (currentGame) this.options = { ...currentGame };

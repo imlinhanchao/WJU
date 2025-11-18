@@ -9,7 +9,7 @@ Vue.createApp({
     const earnPoint = ref(window.gamData?.earnedPoint || 0);
     const difficulty = ref(window.gamData?.difficulty || null);
     async function startGame() {
-      const difficult = window.isDifficult ? 15 : null;
+      const difficult = window.isDifficult ? 15 : '';
       const { source: begin, target: end, matchText, difficulty: gameDifficulty } = await GameCore.start(difficult);
       console.log(`Game started: `, begin, '=>', end);
       current.value = begin;

@@ -67,7 +67,7 @@ class GameCore {
 
   static start(difficulty='') {
     if (difficulty && !isNaN(Number(difficulty))) difficulty = Math.max(1, Math.min(15, Number(difficulty)));
-    return fetch('/api/game/start?difficulty=' + difficulty, {
+    return fetch('/api/game/start' + (difficulty ? `?difficulty=${difficulty}` : ''), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
