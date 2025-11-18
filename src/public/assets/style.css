@@ -155,13 +155,17 @@ button.text {
   background-color: transparent;
   color: var(--btn-color);
 }
-body, html, #app {
+body, html {
+  overflow: auto;
   height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--bg-color);
   color: var(--text-color);
   font: 14px "Chill Pixels Mono", "Pixel32", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+#app {
+  flex: 1;
 }
 .font-silk {
   font-family: "Silkscreen", "Monaspace Neon", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
