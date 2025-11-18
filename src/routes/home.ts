@@ -26,5 +26,6 @@ router.get("/rank", async (req: Request, res: Response) => {
 });
 router.use("/playground", PlayRouter);
 router.get("/", (req: Request, res: Response) => new Game().run(req, res));
+router.get("/difficult", (req: Request, res: Response) => new Game().run(req, res));
 
 export default router;

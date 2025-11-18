@@ -172,6 +172,7 @@ export default class GameCore extends WJU {
       todayGame: currentGame,
       matchText: this.matchText,
       yesterday: yesterdayGame,
+      difficult: req.path.includes('difficult'),
     });
   }
 }
