@@ -1,36 +1,38 @@
 <%- include('../header') %>
-  <main class="flex-1 grid grid-cols-5 gap-4 relative p-10">
-    <a href="/playground/create" class="border border-current border-dashed rounded-lg h-[10em] flex items-center justify-center cursor-pointer">
-      + 制作谜题
-    </a>
+  <main class="flex-1 relative p-10">
+    <section class="grid grid-cols-5 gap-4">
+      <a href="/playground/create" class="border border-current border-dashed rounded-lg h-[10em] flex items-center justify-center cursor-pointer">
+        + 制作谜题
+      </a>
 <% playgrounds.forEach(function(playground) { %>
-    <a 
-      href="/playground/game/<%= playground.id %><%= playground.isPublished ? '' : '/edit' %>" 
-      class="relative truncate border border-[var(<%= playground.isPublished ? '--action-3-color' : '--action-4-color' %>)] rounded-lg h-[10em] flex items-center justify-center cursor-pointer">
-      <div class="text-center px-2 break-words truncate">
-        <div class="text-[3em] truncate <%= playground.isPublished ? 'text-action-3' : 'text-action-4' %>">
-          <%= playground.source %>
-        </div>
-        <div class="opacity-60 text-right absolute bottom-1 right-2 left-2 flex items-center gap-1 justify-between">
-          <span>
+      <a 
+        href="/playground/game/<%= playground.id %><%= playground.isPublished ? '' : '/edit' %>" 
+        class="relative truncate border border-[var(<%= playground.isPublished ? '--action-3-color' : '--action-4-color' %>)] rounded-lg h-[10em] flex items-center justify-center cursor-pointer">
+        <div class="text-center px-2 break-words truncate">
+          <div class="text-[3em] truncate <%= playground.isPublished ? 'text-action-3' : 'text-action-4' %>">
+            <%= playground.source %>
+          </div>
+          <div class="opacity-60 text-right absolute bottom-1 right-2 left-2 flex items-center gap-1 justify-between">
+            <span>
 <% if (playground.bestRecord) { %>
-            <b>最佳：</b><%= playground.bestRecord %>
-<% } %>   </span>
-          <span>
+              <b>最佳：</b><%= playground.bestRecord %>
+<% } %>     </span>
+            <span>
 <% if (playground.isPublished) { %>
-            <svg width="1.5em" height="1.5em" class="inline-block">
-              <use xlink:href="#icon-<%= {
-                fishpi: 'fishpi',
-                github: 'github',
-                steam: 'steam'
-              }[playground.user.from] %>"></use>
-            </svg>
+              <svg width="1.5em" height="1.5em" class="inline-block">
+                <use xlink:href="#icon-<%= {
+                  fishpi: 'fishpi',
+                  github: 'github',
+                  steam: 'steam'
+                }[playground.user.from] %>"></use>
+              </svg>
 <% } %>
-            <%= playground.isPublished ? playground.user.username : '[草稿]' %>
-          </span>
+              <%= playground.isPublished ? playground.user.username : '[草稿]' %>
+            </span>
+          </div>
         </div>
-      </div>
-    </a>
+      </a>
 <% }); %>
+    </section>
   </main>
 <%- include('../footer') %>
