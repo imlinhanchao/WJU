@@ -11,7 +11,7 @@
               <span 
                 <%-record.current != record.target ? 'aria-label="未完成"' : ''%>
                 class="cursor-pointer rounded-md bg-gray-500 bg-opacity-50 px-2 py-1" 
-                @click="view('<%=record.history.join(',')%>')">
+                @click="view('<%=record.history.join(',')%>', '<%= record.target == record.current ? record.target : ''%>')">
                 <span class="<%=record.current != record.target ? 'text-action-3' : ''%>">
                   <%= record.steps || record.history.length %> 步
                   (<%= record.cost %>)
@@ -33,9 +33,8 @@
               :key="action + index"
             >
               <span class="text-sm px-2 py-1 bg-gray-500 bg-opacity-50 rounded-md">{{ action }}</span>
-              <span> => </span>
+              <span v-if="index < viewHistorys.length - 1"> => </span>
             </span>
-            <span class="text-sm px-2 py-1 bg-gray-500 bg-opacity-50 rounded-md"><%= playRecords[0]?.target %></span>
           </section>
         </section>
       </section>

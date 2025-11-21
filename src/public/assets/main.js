@@ -255,8 +255,11 @@ Vue.createApp({
     }
 
     const viewHistorys = ref([]);
-    function view(historys) {
-      viewHistorys.value = historys.split(',');
+    function view(historys, target) {
+      viewHistorys.value = historys.split(',').filter(s => s);
+      if (target) {
+        viewHistorys.value.push(target);
+      }
     }
 
     return {

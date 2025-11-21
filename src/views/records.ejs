@@ -1,0 +1,64 @@
+<%- include('header') %>
+      <main class="flex-1 relative text-center">
+        <header class="mb-5">
+          <h2 class="title">
+            <section>
+              游玩历史
+              <sub>(<%= records.filter(r => r.target == r.current).length %>/<%= records.length %>)</sub>
+            </section>
+          </h2>
+        </header>
+        <section class="p-4">
+          <section class="grid grid-cols-5 gap-4">
+<% records.forEach(function(record) { %>
+              <a 
+                href="javascript:void(0);" 
+                class="relative truncate border <%= record.target == record.current ? 'border-[var(--action-3-color)]' : 'border-dashed border-current' %> rounded-lg h-[10em] flex items-center justify-center cursor-pointer"
+                @click="view('<%=record.history.join(',')%>', '<%= record.target == record.current ? '✔' + record.target : ''%>')"
+              >
+                <div class="text-center px-2 break-words truncate">
+                  <div class="text-[3em] truncate <%= record.target == record.current ? 'text-action-3' : '' %>">
+                    <%= record.source %>
+                  </div>
+                  <div class="<%= record.target == record.current ? 'text-action-3 ' : '' %>opacity-60 text-right absolute bottom-1 right-2 left-2 flex items-center gap-1 justify-between">
+                    <span>
+                      <%= record.createDate %>
+                    </span>
+                    <span class="<%= record.target == record.current ? 'text-action-3' : '' %>">
+                      <%= record.target == record.current ? record.history.length + ' 步' : '[未完成]' %>
+                    </span>
+                  </div>
+                </div>
+              </a>
+<% }); %>
+          </section>
+        </section>
+      </main>
+      <section v-if="viewHistorys.length" class="z-20 fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
+        <section class="flex flex-col p-5 bg-primary bg-opacity-90 rounded-lg shadow-light-100 dark:shadow-dark-100 shadow-lg max-w-[500px] w-full max-h-[95vh] space-y-2">
+          <h2 class="text-lg font-bold text-center relative pb-5">
+            <span class="font-bold text-lg">操作历史</span>
+            <button class="absolute right-0" @click="viewHistorys = []">X</button>
+          </h2>
+          <section class="flex flex-wrap justify-start items-center gap-1 flex-1">
+            <span 
+              v-for="(action, index) in viewHistorys" 
+              :key="action + index"
+            >
+              <span class="text-sm px-2 py-1 bg-opacity-50 rounded-md" :class="action.startsWith('✔') ? 'bg-action-3' : 'bg-gray-500'">{{ action.replace('✔', '') }}</span>
+              <span v-if="index < viewHistorys.length - 1"> => </span>
+            </span>
+          </section>
+          <p class="text-right">
+            <button 
+              @click="publishGame()" 
+              class="font-bold py-2 px-4 rounded m-2 text space-x-1 !text-[var(--action-3-color)] inline-flex items-center justify-center">
+              <svg width="1.5em" height="1.5em" class="inline-block"><use xlink:href="#icon-step"></use></svg>
+              <span>发布到游乐场</span>
+            </button>
+          </p>
+        </section>
+      </section>
+    </section>
+  </section>
+<%- include('footer') %>
