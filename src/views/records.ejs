@@ -47,12 +47,9 @@
               :key="action + index"
             >
               <span 
-                class="text-sm px-2 py-1 bg-opacity-50 rounded-md truncate inline-block max-w-[40%]" 
+                class="text-sm px-2 py-1 bg-opacity-50 rounded-md break-all whitespace-pre-wrap" 
                 :class="action.startsWith('✔') ? 'bg-action-3' : 'bg-gray-500'"
-                :aria-label="action.replace('✔', '')"
-              >
-                {{ action.replace('✔', '') }}
-              </span>
+              >{{ action.replace('✔', '') }}</span>
               <span v-if="index < viewHistorys.length - 1"> => </span>
             </span>
           </section>
