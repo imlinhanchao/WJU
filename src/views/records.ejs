@@ -41,12 +41,18 @@
             <button class="absolute right-0" @click="viewHistorys = []">X</button>
           </h2>
           <p v-if="error" class="error">{{ error }}</p>
-          <section class="flex flex-wrap justify-start items-center gap-1 flex-1">
+          <section class="flex flex-wrap justify-start items-center gap-1 flex-1 overflow-auto">
             <span 
               v-for="(action, index) in viewHistorys" 
               :key="action + index"
             >
-              <span class="text-sm px-2 py-1 bg-opacity-50 rounded-md" :class="action.startsWith('✔') ? 'bg-action-3' : 'bg-gray-500'">{{ action.replace('✔', '') }}</span>
+              <span 
+                class="text-sm px-2 py-1 bg-opacity-50 rounded-md truncate inline-block max-w-[40%]" 
+                :class="action.startsWith('✔') ? 'bg-action-3' : 'bg-gray-500'"
+                :aria-label="action.replace('✔', '')"
+              >
+                {{ action.replace('✔', '') }}
+              </span>
               <span v-if="index < viewHistorys.length - 1"> => </span>
             </span>
           </section>
