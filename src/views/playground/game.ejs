@@ -2,7 +2,7 @@
       <main class="flex-1 flex flex-col justify-center items-center relative">
         <main class="flex-1 flex flex-col justify-center items-center relative">
         <span v-if="error" class="error">{{ error }}</span>
-        <section v-if="current">
+        <section v-if="current" class="whitespace-wrap w-full text-center px-5 break-all">
           <span class="text-[5em]" v-for="(t, i) in current.split('')" :key="t + i">{{ t }}</span>
         </section>
         <section v-if="!current">
@@ -13,7 +13,7 @@
         <section v-else class="text-4xl font-silk">
           {{ current == matchText ? '==' : '!='}}
         </section>
-        <section v-if="current" class="whitespace-pre-wrap w-full text-center px-5 break-all">
+        <section v-if="current" class="whitespace-wrap w-full text-center px-5 break-all">
           <span 
             class="text-[3em]" 
             :class="{ 'text-blue-500': t != '_', 'text-gray-500': t == '_' }" 

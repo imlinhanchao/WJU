@@ -33,8 +33,9 @@
               :key="action + index"
             >
               <span class="text-sm px-2 py-1 bg-gray-500 bg-opacity-50 rounded-md">{{ action }}</span>
-              <span v-if="index != viewHistorys.length -1"> => </span>
+              <span> => </span>
             </span>
+            <span class="text-sm px-2 py-1 bg-gray-500 bg-opacity-50 rounded-md"><%= playRecords[0]?.target %></span>
           </section>
         </section>
       </section>

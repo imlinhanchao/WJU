@@ -80,6 +80,21 @@ class GameCore {
     });
   }
 
+  static publishTo(id) {
+    return fetch('/api/game/publish', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
+
   static generate(source='', seed='') {
     return fetch(`/playground/game/gen?source=${source}&seed=${seed}`, {
       method: 'GET',

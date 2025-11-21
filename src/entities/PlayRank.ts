@@ -1,5 +1,6 @@
 import { ViewEntity, DataSource, ViewColumn } from 'typeorm';
 import { PlayRecord } from './PlayRecord';
+import { Playground } from './Playground';
 
 @ViewEntity({
   name: 'play_rank', // 视图名
@@ -7,6 +8,7 @@ import { PlayRecord } from './PlayRecord';
     .createQueryBuilder()
     .select('p.userId', 'userId')
     .addSelect('p.playgroundId', 'playgroundId')
+    .addSelect('p.isDaily', 'isDaily')
     .addSelect('p.id', 'playRecordId')
     .addSelect('p.steps', 'steps')
     .addSelect('p.source', 'source')
@@ -42,6 +44,9 @@ export class PlayRankView {
 
   @ViewColumn()
   playRecordId: number;
+
+  @ViewColumn()
+  isDaily: boolean;
 
   @ViewColumn()
   steps: number;

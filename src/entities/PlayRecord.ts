@@ -39,6 +39,9 @@ export class PlayRecord implements IGame {
   })
   difficulty: number = 0;
 
+  @Column({ comment: "是否为每日挑战" })
+  isDaily: boolean = false;
+
   @Column('bigint', { comment: "创建时间" })
   createTime: number = Date.now();
 

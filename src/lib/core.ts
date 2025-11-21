@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
 import { error, json, render } from '../utils/route';
-import { GameRepo, UserRepo } from '../entities';
+import { GameRepo, PlaygroundRepo, PlayRecordRepo, UserRepo } from '../entities';
 import { srand, random, weightedRandom} from '../utils';
 import { And, MoreThan, Not } from 'typeorm';
 import { FingerTo } from 'fishpi';
 import utils from '../utils';
 import { estimateDifficulty } from './difficulty';
 import WJU from './wju';
+import { Playground } from '@/entities/Playground';
+import { PlayRecord } from '@/entities/PlayRecord';
 
 export interface IGame {
   source: string;
@@ -176,5 +178,49 @@ export default class GameCore extends WJU {
       yesterday: yesterdayGame,
       difficult: req.path.includes('difficult'),
     });
+  }
+
+  async publish(req: Request, res: Response, next: Function) {
+    try {
+      const userId = req.session.user?.id;
+      if (!userId) {
+        return next();
+      }
+      let currentGame: IGame | null = null;
+      if (req.body.id) {
+        currentGame = await GameRepo.findOneBy({ id: req.body.id, userId });
+      } else {
+        currentGame = await this.getTodayGame(userId);
+      }
+      if (!currentGame) {
+        return error(res, "无此可发布游戏");
+      }
+      if (await PlaygroundRepo.findOneBy({ seed: currentGame.seed, source: currentGame.source })) {
+        return error(res, "该游戏已发布至游乐场");
+      }
+      const playground = Object.assign(new Playground(), {
+        source: currentGame.source,
+        target: currentGame.target,
+        seed: currentGame.seed,
+        actions: [],
+        difficulty: currentGame.difficulty,
+        isPublished: true,
+        bestRecord: currentGame.history.length,
+        isDaily: true,
+      });
+      playground.userId = userId;
+      const playgroundSaved = await PlaygroundRepo.save(PlaygroundRepo.create(playground))
+      const playRecord: PlayRecord = new PlayRecord(playgroundSaved);
+      playRecord.userId = userId;
+      playRecord.isDaily = true;
+      playRecord.playgroundId = playgroundSaved.id;
+      playRecord.history = currentGame.history;
+      playRecord.current = currentGame.current;
+      playRecord.steps = currentGame.history.length;
+      await PlayRecordRepo.save(PlayRecordRepo.create(playRecord));
+      return json(res, playgroundSaved);
+    } catch (err) {
+      error(res, "创建失败: " + (err as Error).message);
+    }
   }
 }

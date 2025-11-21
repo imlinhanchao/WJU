@@ -109,8 +109,6 @@ Vue.createApp({
           setTimeout(() => {
             localStorage.removeItem('gameData')
           }, 500);
-          // cost.value += 365;
-          // 这东西好像没用？
         }
       });
     }
@@ -145,6 +143,16 @@ Vue.createApp({
       localStorage.setItem('gameData', JSON.stringify(gameData));
     }
 
+    async function publishGame(id) {
+      const data = await GameCore.publishTo(id).catch(err => {
+        error.value = err.message;
+      });
+      if (data) {
+        location.href = `/playground/game/${data.id}`;
+      }
+    }
+
+    // playground
     const actionText = {
       addJ: '+J',
       addU: '+U',
@@ -265,6 +273,7 @@ Vue.createApp({
       actionText,
       save: savePlayground,
       publish,
+      publishGame,
       addAction,
       removeSource,
       revokeAction,

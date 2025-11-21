@@ -239,6 +239,7 @@ router.post("/game/:id/start", async (req: Request, res: Response, next) => {
       playRecord = new PlayRecord(req.playground);
       playRecord.userId = req.session.user!.id;
       playRecord.playgroundId = req.playground.id;
+      playRecord.isDaily = req.playground.isDaily;
       playRecord = PlayRecordRepo.create(playRecord);
       await PlayRecordRepo.save(playRecord);
     }
@@ -272,7 +273,7 @@ router.post("/game/:id/action/:action", async (req: Request, res: Response, next
       game.options.history = [];
     } else if (await game.doAction(action)) {
       playRecord.steps = playRecord.history.length;
-      if (req.playground.userId !== req.session.user!.id && 
+      if ((req.playground.userId !== req.session.user!.id || req.playground.isDaily) && 
         (req.playground.bestRecord === 0 || playRecord.steps < req.playground.bestRecord)) {
         req.playground.bestRecord = playRecord.steps;
         await PlaygroundRepo.save(req.playground);
@@ -328,10 +329,10 @@ router.get("/game/:id/rank", async (req: Request, res: Response, next) => {
       return next();
     }
     const ranks = await PlayRankRepo.find({ 
-      where: {
-        playgroundId: req.playground.id,
-        userId: Not(req.playground.userId),
-      },
+      where: [
+        { playgroundId: req.playground.id, userId: Not(req.playground.userId) },
+        { playgroundId: req.playground.id, isDaily: true, },
+    ],
       order: { steps: "ASC", cost: "ASC" },
     });
     const userIds = Array.from(new Set(ranks.map(p => p.userId)));
