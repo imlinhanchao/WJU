@@ -14,7 +14,7 @@
               <a 
                 href="javascript:void(0);" 
                 class="relative truncate border <%= record.target == record.current ? 'border-[var(--action-3-color)]' : 'border-dashed border-current' %> rounded-lg h-[10em] flex items-center justify-center cursor-pointer"
-                @click="view('<%=record.history.join(',')%>', '<%= record.target == record.current ? '✔' + record.target : ''%>')"
+                @click="view('<%=record.history.join(',')%>', '<%= record.target == record.current ? '✔' + record.target : ''%>', '<%= record.id %>')"
               >
                 <div class="text-center px-2 break-words truncate">
                   <div class="text-[3em] truncate <%= record.target == record.current ? 'text-action-3' : '' %>">
@@ -40,6 +40,7 @@
             <span class="font-bold text-lg">操作历史</span>
             <button class="absolute right-0" @click="viewHistorys = []">X</button>
           </h2>
+          <p v-if="error" class="error">{{ error }}</p>
           <section class="flex flex-wrap justify-start items-center gap-1 flex-1">
             <span 
               v-for="(action, index) in viewHistorys" 
@@ -51,7 +52,7 @@
           </section>
           <p class="text-right">
             <button 
-              @click="publishGame()" 
+              @click="publishGame(viewId)" 
               class="font-bold py-2 px-4 rounded m-2 text space-x-1 !text-[var(--action-3-color)] inline-flex items-center justify-center">
               <svg width="1.5em" height="1.5em" class="inline-block"><use xlink:href="#icon-step"></use></svg>
               <span>发布到游乐场</span>

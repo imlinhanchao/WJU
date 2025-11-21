@@ -255,11 +255,13 @@ Vue.createApp({
     }
 
     const viewHistorys = ref([]);
-    function view(historys, target) {
+    const viewId = ref(null);
+    function view(historys, target, id) {
       viewHistorys.value = historys.split(',').filter(s => s);
       if (target) {
         viewHistorys.value.push(target);
       }
+      viewId.value = id;
     }
 
     return {
@@ -274,6 +276,7 @@ Vue.createApp({
       isWin,
       playground,
       actionText,
+      viewId,
       save: savePlayground,
       publish,
       publishGame,
