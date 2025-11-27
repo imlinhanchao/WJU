@@ -8,7 +8,10 @@ Vue.createApp({
     const history = ref(window.gamData?.history || []);
     const earnPoint = ref(window.gamData?.earnedPoint || 0);
     const difficulty = ref(window.gamData?.difficulty || null);
-    async function startGame() {
+    async function startGame(renew=false) {
+      if (renew && !confirm('重新开始游戏会重新生成关卡，确定要继续吗？')) {
+        return;
+      }
       const difficult = window.isDifficult ? 15 : '';
       const { source: begin, target: end, matchText, difficulty: gameDifficulty } = await GameCore.start(difficult);
       console.log(`Game started: `, begin, '=>', end);
