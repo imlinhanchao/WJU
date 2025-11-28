@@ -41,7 +41,12 @@
         </section>
         <% if(locals.user) { %>
         <div v-if="isWin" class="text-center py-5">
-          <p>🎉 你已完成今天的挑战！获得 {{ earnPoint }} 积分。🎉</p>
+          <p>
+            🎉 
+            你已完成今天的挑战！获得 {{ earnPoint }} 积分
+            <template v-if="earnedItem">和<b>{{ earnedItem }}</b></template>！
+            🎉
+          </p>
           <button 
             @click="publishGame()" 
             class="font-bold py-2 px-4 rounded m-2 text space-x-1 !text-[var(--btn-disabled-bg-color)] inline-flex items-center justify-center">
@@ -108,6 +113,7 @@
       current: '<%= locals.current %>',
       history: <%- JSON.stringify(locals.history || []) %>,
       earnedPoint: <%- JSON.stringify(locals.earnedPoint || 0) %>,
+      earnedItem: <%- JSON.stringify(locals.earnedItem || null) %>,
       seed: '<%= locals.seed %>',
     };
     window.isDifficult = <%= locals.difficult %>;

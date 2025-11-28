@@ -3,6 +3,9 @@ import { render } from '../utils/route';
 import { shortTime } from '../utils/';
 import { Request, Response } from 'express';
 import { Router } from "express";
+import BagCore from '@/lib/bag';
+import { items } from '@/lib/item';
+import { Bag } from '@/entities/Bag';
 
 const router = Router();
 
@@ -15,6 +18,8 @@ router.get("/:from/:username", async (req: Request, res: Response, next) => {
     return next();
   }
   const profile = await ProfileRepo.findOne({ where: { user: user.id } });
+  const bag = req.session.user?.id === user.id || req.session.user?.isAdmin ? await new BagCore(user.id).getBag() : undefined;
+
   return render(res, "profile", req).title(`@${user.username}`).error(error).render({
     profile: {
       ...user,
@@ -26,6 +31,12 @@ router.get("/:from/:username", async (req: Request, res: Response, next) => {
       avgEarnedPoint: 0,
       ...profile,
     },
+    bags: items.map((item) => ({
+      key: item.itemKey,
+      name: item.itemName,
+      description: item.description,
+      count: Number(bag?.[`${item.itemKey}Count` as keyof Bag] || 0),
+    })).filter(bag => bag.count > 0),
     avgTimeCost: profile ? shortTime(profile.avgTimeCost * 1000) : 0,
   });
 });

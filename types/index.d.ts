@@ -29,6 +29,7 @@ declare interface IConfig {
     identity: string;
     session: string;
     goldenKey: string;
+    marketKey: string;
   };
   database: {
     host: string;

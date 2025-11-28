@@ -9,6 +9,10 @@
           <label for="goldenKey">鱼排金手指:</label>
           <input type="text" id="goldenKey" name="goldenKey" required value="<%= locals.body?.goldenKey -%>">
         </p>
+        <p>
+          <label for="marketKey">鱼排市场Key:</label>
+          <input type="text" id="marketKey" name="marketKey" required value="<%= locals.body?.marketKey || '' -%>">
+        </p>
         <h2>数据库配置</h2>
         <p>
           <label for="host">主机:</label>

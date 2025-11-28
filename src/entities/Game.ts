@@ -27,6 +27,9 @@ export class Game {
   @Column({ comment: "获得积分" })
   earnedPoint: number = 0;
 
+  @Column({ comment: "获得物品" })
+  earnedItem: string = '';
+
   @Column({ 
     type: 'decimal',
     precision: 5,
@@ -35,6 +38,9 @@ export class Game {
     default: 0.00 
   })
   difficulty: number = 0;
+
+  @Column({ comment: "游戏模式", default: 'normal' })
+  mode: string = 'normal';
 
   @Column('bigint', { comment: "创建时间" })
   createTime: number = Date.now();

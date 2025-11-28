@@ -6,6 +6,8 @@ import { PlayRecord } from "./PlayRecord";
 import { Playground } from "./Playground";
 import { ProfileView } from "./Profile";
 import { PlayRankView } from './PlayRank';
+import { Bag } from './Bag';
+import { BagRecord } from './BagRecord';
 import utils from '../utils'
 
 @EventSubscriber()
@@ -34,7 +36,7 @@ export const AppDataSource = utils.config ? new DataSource({
   logging: false,
   ...utils.config.database,
   synchronize: true,
-  entities: [User, Game, PlayRecord, Playground, ProfileView, PlayRankView],
+  entities: [User, Game, PlayRecord, Playground, ProfileView, PlayRankView, Bag, BagRecord],
   migrations: [],
   subscribers: [],
   charset: "utf8mb4_unicode_ci"
@@ -50,3 +52,5 @@ export const PlaygroundRepo = utils.config ? AppDataSource.getRepository(Playgro
 export const PlayRecordRepo = utils.config ? AppDataSource.getRepository(PlayRecord) : {} as Repository<PlayRecord>;
 export const ProfileRepo = utils.config ? AppDataSource.getRepository(ProfileView) : {} as Repository<ProfileView>;
 export const PlayRankRepo = utils.config ? AppDataSource.getRepository(PlayRankView) : {} as Repository<PlayRankView>;
+export const BagRepo = utils.config ? AppDataSource.getRepository(Bag) : {} as Repository<Bag>;
+export const BagRecordRepo = utils.config ? AppDataSource.getRepository(BagRecord) : {} as Repository<BagRecord>;

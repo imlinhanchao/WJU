@@ -9,6 +9,8 @@ import { estimateDifficulty } from './difficulty';
 import WJU from './wju';
 import { Playground } from '@/entities/Playground';
 import { PlayRecord } from '@/entities/PlayRecord';
+import BagCore from './bag';
+import Item, { BagItemType } from './item';
 
 export interface IGame {
   source: string;
@@ -17,6 +19,7 @@ export interface IGame {
   current: string;
   history: string[];
   difficulty: number;
+  mode?: string;
 }
 
 export default class GameCore extends WJU {
@@ -87,6 +90,14 @@ export default class GameCore extends WJU {
         currentGame.earnedPoint = earnedPoint;
         await this.setUserPoint(userId, currentGame.earnedPoint, 'WJU游戏通关奖励');
         if (req.session.user) req.session.user.point += currentGame.earnedPoint;
+        if (this.options.mode === 'difficult') {
+          const item = Item.getRandomItem();
+          if (item) {
+            const bag = new BagCore(userId);
+            await bag.addItem(item, 1);
+            currentGame.earnedItem = item;
+          }
+        }
       }
       currentGame.updatedTime = Date.now();
       await GameRepo.save(currentGame);
@@ -96,6 +107,7 @@ export default class GameCore extends WJU {
         matchText: this.matchText,
         win: currentGame.current === currentGame.target,
         earned: currentGame.earnedPoint,
+        earnedItem: Item.getName(currentGame.earnedItem as BagItemType | null),
       });
     } catch (err) {
       return error(res, (err as Error).message);
@@ -128,29 +140,38 @@ export default class GameCore extends WJU {
     }
   }
 
-  async start(req: Request, res: Response) {
-    const userId = req.session.user?.id;
-    const difficulty = Number(req.query.difficulty || '0');
+  async createAndSave(userId: string | undefined, difficulty: number = 0) {
     const newGameData = isNaN(difficulty) || !difficulty ? 
       this.create(Date.now()) : 
       this.createByDifficulty(Date.now(), difficulty);
     if (!userId) {
-      return json(res, {
-        ...newGameData,
-        matchText: this.matchText,
-      });
+      return newGameData;
     }
     const newGame = GameRepo.create({
       ...newGameData,
       userId: userId,
     });
     await GameRepo.save(newGame);
-    this.options = newGameData;
+    return newGameData;
+  }
+
+  async start(req: Request, res: Response) {
+    const userId = req.session.user?.id;
+    const difficulty = Number(req.query.difficulty ? 15 : 0);
+    const newGame = await this.createAndSave(userId, difficulty);
+    if (!userId) {
+      return json(res, {
+        ...newGame,
+        matchText: this.matchText,
+      });
+    }
+
+    this.options = newGame;
     this.setUserPoint(userId, difficulty ? -200 : -100, 'WJU游戏开局扣除');
     if (req.session.user) req.session.user.point -= difficulty ? 200 : 100;
 
     return json(res, {
-      ...newGameData,
+      ...newGame,
       target: undefined,
       seed: undefined,
       matchText: this.matchText,
@@ -171,6 +192,7 @@ export default class GameCore extends WJU {
 
     return render(res, "index", req).render({
       ...currentGame,
+      earnedItem: Item.getName(currentGame?.earnedItem as BagItemType),
       target: undefined,
       seed: undefined,
       todayGame: currentGame,
@@ -221,6 +243,36 @@ export default class GameCore extends WJU {
       return json(res, playgroundSaved);
     } catch (err) {
       error(res, "创建失败: " + (err as Error).message);
+    }
+  }
+
+  async useItem(req: Request, res: Response) {
+    const type: BagItemType = req.params.type as BagItemType;
+    const data: any = req.body;
+    const userId = req.session.user?.id;
+    if (!userId) {
+      return error(res, "请先登录后再进行游戏操作");
+    }
+    const bag = new BagCore(userId);
+    try {
+      const userBag = await bag.getBag();
+      if (userBag[`${type}Count`] <= 0) {
+        throw new Error("道具数量不足");
+      }
+      if (type === BagItemType.DailyResetCard) {
+        await Item.useDailyResetCard(userId, data.createDate);
+      } else if (type === BagItemType.AccountResetCard) {
+        await Item.useAccountResetCard(userId);
+      } else if (type === BagItemType.FreePlayCard) {
+        const currentGame = await this.getTodayGame(userId);
+        if (currentGame && currentGame.earnedPoint) {
+          throw new Error("今日游戏已完成，无法使用限免游玩卡");
+        }
+        await this.createAndSave(userId);
+      }
+      return json(res, await bag.addItem(type, -1));
+    } catch (err) {
+      return error(res, (err as Error).message);
     }
   }
 }

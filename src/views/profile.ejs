@@ -67,9 +67,35 @@
           <% } -%>
         </section>
         <% if(locals.user && locals.user.id.toString() === profile.id.toString()){ -%>
-          <section class="text-sm text-[var(--disabled-bg-color)]">
-            <a href="/records">☰ 游玩历史</a> | <a href="/logout">👋 退出登录</a>
+          <section class="text-lg text-[var(--disabled-bg-color)]">
+            <a href="#bag" class="font-bold text-action-3">🎒 我的背包</a> | <a href="/records">☰ 游玩历史</a> | <a href="/logout">👋 退出登录</a>
           </section>
+        <% } -%>
+        <% if(locals.user && (locals.user.id.toString() === profile.id.toString() || locals.user.isAdmin)){ -%>
+        <% if(locals.user.isAdmin){ -%>
+          <button class="font-bold py-2 px-4 rounded m-2 font-mono text" @click="addItem">+ 添加道具</button>
+        <% } -%>
+        <section class="py-2" id="bag">
+          <section class="grid grid-cols-3 gap-4 mt-2 mb-4">
+            <% bags.forEach(bag => { -%>
+            <div class="border border-dashed border-[var(--border-color)] rounded p-4 text-center">
+              <h4 class="text-lg font-bold mb-2"><%= bag.name %> x<%= bag.count %></h4>
+              <p class="mb-2 text-sm text-[var(--disabled-bg-color)]"><%= bag.description %></p>
+              <button 
+                class="bg-action-3 font-bold py-2 px-4 rounded w-full"
+                <%= bag.count > 0 ? '' : 'disabled' %>
+                @click="useItem('<%= bag.key %>')">
+                使用
+              </button>
+            </div>
+            <% }) -%>
+            <% if (bags.length === 0) { -%>
+            <p class="col-span-3 text-center text-[var(--disabled-bg-color)]">
+              背包空空如也，快去游乐场挑战<a href="/difficult" class="border-b border-dashed">困难模式</a>获取道具吧！
+            </p>
+            <% } -%>
+          </section>
+        </section>
         <% } -%>
       </main>
     </section>

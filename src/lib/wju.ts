@@ -18,7 +18,8 @@ export default class WJU {
       seed: Date.now(),
       current: '',
       history: [],
-      difficulty: 0
+      difficulty: 0,
+      mode: 'normal'
     };
   }
 
@@ -100,7 +101,8 @@ export default class WJU {
       seed,
       current: begin,
       history: [],
-      difficulty: difficulty
+      difficulty: difficulty,
+      mode: 'normal'
     };
     
     return { ...this.options, actions };
@@ -253,7 +255,8 @@ export default class WJU {
       seed,
       current: begin,
       history: [],
-      difficulty: best.difficulty
+      difficulty: best.difficulty,
+      mode: 'difficult'
     };
 
     return this.options;

@@ -20,6 +20,9 @@ export class User {
   @Column('bigint', { comment: "用户积分" })
   point: number = 500;
 
+  @Column({ comment: "是否管理员", default: false })
+  isAdmin: boolean = false;
+
   constructor(username: string = '', nickname: string = '') {
     this.username = username;
     this.nickname = nickname || username;

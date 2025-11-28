@@ -14,13 +14,14 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const { webport, goldenKey, host, port, username, password, database, prefix } = req.body;
+  const { webport, goldenKey, host, port, username, password, database, prefix, marketKey } = req.body;
   
   const config: IConfig = {
     webport, secret: {
       identity: '_SESSION_ID_' + randomStr(),
       session: randomStr(),
       goldenKey,
+      marketKey,
     },
     database: {
       host, port, username, password, database, entityPrefix: prefix

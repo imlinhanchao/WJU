@@ -7,7 +7,8 @@ import ApiRouter from "./api";
 import LoginRouter from "./login";
 import ProfileRouter from "./profile";
 import PlayRouter from "./playground";
-import { Not } from 'typeorm';
+import BagRouter from "./bag";
+
 
 const router = Router();
 
@@ -41,6 +42,7 @@ router.get("/records", async (req: Request, res: Response) => {
   })) });
 });
 router.use("/playground", PlayRouter);
+router.use("/bag", BagRouter);
 router.get("/", (req: Request, res: Response) => new Game().run(req, res));
 router.get("/difficult", (req: Request, res: Response) => new Game().run(req, res));
 

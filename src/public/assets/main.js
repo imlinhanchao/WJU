@@ -7,6 +7,7 @@ Vue.createApp({
     const match = ref(window.gamData?.matchText || '');
     const history = ref(window.gamData?.history || []);
     const earnPoint = ref(window.gamData?.earnedPoint || 0);
+    const earnItem = ref(window.gamData?.earnedItem || 0);
     const difficulty = ref(window.gamData?.difficulty || null);
     async function startGame(renew=false) {
       if (renew && !confirm('重新开始游戏会重新生成关卡，确定要继续吗？')) {
@@ -54,47 +55,39 @@ Vue.createApp({
       history.value.push(current.value);
       current.value = GameCore.addJ(current.value);
       if (!window.player) return save();
-      const { current: newCurrent, matchText, earned } = await GameCore.action('addJ');
-      current.value = newCurrent;
-      match.value = matchText;
-      earnPoint.value = earned;
+      action('addJ');
     }
 
     async function addU() {
       history.value.push(current.value);
       current.value = GameCore.addU(current.value);
       if (!window.player) return save();
-      const { current: newCurrent, matchText, earned } = await GameCore.action('addU');
-      current.value = newCurrent;
-      match.value = matchText;
-      earnPoint.value = earned;
+      action('addU');
     }
 
     async function lessJ() {
       history.value.push(current.value);
       current.value = GameCore.lessJ(current.value);
       if (!window.player) return save();
-      const { current: newCurrent, matchText, earned } = await GameCore.action('lessJ');
-      current.value = newCurrent;
-      match.value = matchText;
-      earnPoint.value = earned;
+      action('lessJ');
     }
 
     async function lessU() {
       history.value.push(current.value);
       current.value = GameCore.lessU(current.value);
       if (!window.player) return save();
-      const { current: newCurrent, matchText, earned } = await GameCore.action('lessU');
-      current.value = newCurrent;
-      match.value = matchText;
-      earnPoint.value = earned;
+      action('lessU');
     }
 
     async function double() {
       history.value.push(current.value);
       current.value = GameCore.double(current.value);
       if (!window.player) return save();
-      const { current: newCurrent, matchText, earned } = await GameCore.action('double');
+      action('double');
+    }
+
+    async function action(type) {
+      const { current: newCurrent, matchText, earned } = await GameCore.action(type);
       current.value = newCurrent;
       match.value = matchText;
       earnPoint.value = earned;

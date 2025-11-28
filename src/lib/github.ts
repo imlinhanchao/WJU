@@ -17,6 +17,7 @@ export async function login(req: Request, res: Response) {
         lastLogin: Date.now(),
         from: 'github',
         point: 500,
+        isAdmin: false,
       };
       await saveUser(req.session.user);
       return res.redirect("/");

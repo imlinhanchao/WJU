@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Router } from "express";
 import { PlaygroundRepo, PlayRankRepo, PlayRecordRepo, UserRepo } from '@/entities';
-import { And, Equal, FindOptionsWhere, In, LessThan, Not, Or } from 'typeorm';
+import { In, LessThan, Not } from 'typeorm';
 import { error, json, render } from '@/utils/route';
 import { Playground } from '@/entities/Playground';
 import { PlayRecord } from '@/entities/PlayRecord';
