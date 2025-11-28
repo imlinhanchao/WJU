@@ -260,6 +260,15 @@ Vue.createApp({
       viewId.value = id;
     }
 
+    function addItem(user) {
+      const itemName = prompt('请输入道具名称：');
+      if (!itemName) {
+        alert('道具名称不能为空');
+        return;
+      }
+      GameCore.addItem(itemName, user);
+    }
+
     return {
       isDark,
       error,
@@ -296,6 +305,7 @@ Vue.createApp({
       playAction,
       viewHistorys,
       view,
+      addItem,
     }
   }
 }).mount('#app');

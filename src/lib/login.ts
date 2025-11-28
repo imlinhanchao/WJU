@@ -6,6 +6,7 @@ export async function saveUser(user: User) {
     await UserRepo.save(UserRepo.create(user));
   } else {
     user.lastLogin = Date.now();
+    user.isAdmin = existingUser.isAdmin;
     UserRepo.merge(existingUser, user);
     await UserRepo.update({ id: existingUser.id }, existingUser);
   }

@@ -73,9 +73,9 @@
         <% } -%>
         <% if(locals.user && (locals.user.id.toString() === profile.id.toString() || locals.user.isAdmin)){ -%>
         <% if(locals.user.isAdmin){ -%>
-          <button class="font-bold py-2 px-4 rounded m-2 font-mono text" @click="addItem">+ 添加道具</button>
+          <button class="font-bold py-2 px-4 rounded m-2 font-mono text" @click="addItem(<%= profile.id %>)">+ 添加道具</button>
         <% } -%>
-        <section class="py-2" id="bag">
+        <section class="p-2" id="bag">
           <section class="grid grid-cols-3 gap-4 mt-2 mb-4">
             <% bags.forEach(bag => { -%>
             <div class="border border-dashed border-[var(--border-color)] rounded p-4 text-center">

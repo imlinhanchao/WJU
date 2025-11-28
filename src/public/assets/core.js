@@ -3,6 +3,21 @@ class GameCore {
 
   }
 
+  static addItem(type, user) {
+    return fetch('/bag/addItem', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ type, user }),
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
+
   static action(type) {
     return fetch('/api/game/action/' + type, {
       method: 'POST',
