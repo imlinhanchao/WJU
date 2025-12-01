@@ -18,6 +18,21 @@ class GameCore {
     });
   }
 
+  static useItem(type, params) {
+    return fetch('/bag/useItem', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ type, ...params }),
+    }).then(res => res.json()).then(rsp => {
+      if (rsp.code) {
+        throw new Error(rsp.message);
+      }
+      return rsp.data;
+    });
+  }
+
   static action(type) {
     return fetch('/api/game/action/' + type, {
       method: 'POST',

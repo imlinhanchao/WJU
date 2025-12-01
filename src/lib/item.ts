@@ -36,7 +36,7 @@ export default class Item {
   }
 
   static async useDailyResetCard(userId: string, createDate: string) {
-    const todayStart = Math.floor(Date.now() / 86400000) * 86400000;
+    const todayStart = new Date(new Date(createDate).toLocaleDateString()).getTime();
     const todayEnd = todayStart + 86400000;
     const targetGame = await GameRepo.find({ 
       where: { 
@@ -46,13 +46,13 @@ export default class Item {
       order: { updatedTime: 'DESC' } 
     });
     if (targetGame?.length === 0) {
-      throw new Error("无游戏可重置");
+      throw new Error("当天无游戏可重置");
     }
     for (const game of targetGame) {
-      if (createDate && new Date(createDate).getTime() !== Math.floor(game.createTime / 86400000) * 86400000) {
-        continue;
+      const createTime = Number(game.createTime);
+      if (todayStart < createTime && createTime < todayEnd) {
+        GameRepo.remove(game);
       }
-      GameRepo.remove(game);
     }
   }
 

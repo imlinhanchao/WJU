@@ -269,6 +269,32 @@ Vue.createApp({
       GameCore.addItem(itemName, user);
     }
 
+    function useItem(type, name) {
+      if (!confirm(`确定要使用道具 ${name} 吗？`)) return;
+      const params = {};
+      if (type === 'dailyResetCard') {
+        const dateStr = prompt('请输入需重置的日期：', new Date().toLocaleDateString().slice(0, 10));
+        if (!dateStr) {
+          return;
+        }
+        if (new Date(dateStr).toString() === 'Invalid Date') {
+          error.value = '不是合法的日期格式';
+          return;
+        }
+        params.createDate = dateStr;
+      }
+      error.value = '';
+      GameCore.useItem(type, params).catch(err => {
+        error.value = err.message;
+      }).then(() => {
+        if (type == 'freePlayCard') {
+          location.href = '/';
+        } else {
+          location.reload()
+        }
+      });
+    }
+
     return {
       isDark,
       error,
@@ -306,6 +332,7 @@ Vue.createApp({
       viewHistorys,
       view,
       addItem,
+      useItem,
     }
   }
 }).mount('#app');

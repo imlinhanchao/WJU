@@ -247,8 +247,8 @@ export default class GameCore extends WJU {
   }
 
   async useItem(req: Request, res: Response) {
-    const type: BagItemType = req.params.type as BagItemType;
     const data: any = req.body;
+    const type: BagItemType = data.type as BagItemType;
     const userId = req.session.user?.id;
     if (!userId) {
       return error(res, "请先登录后再进行游戏操作");

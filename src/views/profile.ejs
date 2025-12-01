@@ -84,7 +84,7 @@
               <button 
                 class="bg-action-3 font-bold py-2 px-4 rounded w-full"
                 <%= bag.count > 0 ? '' : 'disabled' %>
-                @click="useItem('<%= bag.key %>')">
+                @click="useItem('<%= bag.key %>', '<%= bag.name %>')">
                 使用
               </button>
             </div>
