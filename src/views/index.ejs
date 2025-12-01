@@ -44,7 +44,11 @@
           <p>
             🎉 
             你已完成今天的挑战！获得 {{ earnPoint }} 积分
-            <template v-if="earnedItem">和 <b>{{ earnedItem }}</b> </template>！
+            <template v-if="earnedItem">和
+              <a href="/u/<%= user.from %>/<%= user.username %>">
+                <b aria-label="前往使用">{{ earnedItem }}</b>
+              </a> 
+            </template>！
             🎉
           </p>
           <button 
