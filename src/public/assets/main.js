@@ -7,7 +7,7 @@ Vue.createApp({
     const match = ref(window.gamData?.matchText || '');
     const history = ref(window.gamData?.history || []);
     const earnPoint = ref(window.gamData?.earnedPoint || 0);
-    const earnItem = ref(window.gamData?.earnedItem || 0);
+    const earnedItem = ref(window.gamData?.earnedItem || 0);
     const difficulty = ref(window.gamData?.difficulty || null);
     async function startGame(renew=false) {
       if (renew && !confirm('重新开始游戏会重新生成关卡，确定要继续吗？')) {
@@ -87,10 +87,11 @@ Vue.createApp({
     }
 
     async function action(type) {
-      const { current: newCurrent, matchText, earned } = await GameCore.action(type);
+      const { current: newCurrent, matchText, earned, earnedItem: newEarnedItem } = await GameCore.action(type);
       current.value = newCurrent;
       match.value = matchText;
       earnPoint.value = earned;
+      earnedItem.value = newEarnedItem;
     }
 
     const canAddJ = computed(() => !current.value.endsWith('JJ'));
@@ -308,6 +309,7 @@ Vue.createApp({
       playground,
       actionText,
       viewId,
+      earnedItem,
       save: savePlayground,
       publish,
       publishGame,
