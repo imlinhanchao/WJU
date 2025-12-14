@@ -12,33 +12,43 @@ import { shortTime } from '@/utils';
 const router = Router();
 
 async function getPlaygrounds(userId: string, createTime: number = Date.now(), count: number = 20, draft: boolean = false) {
+  // where createTime < createTime AND (isPublished = true OR userId = userId)
+  const where = draft ? [
+    { createTime: LessThan(createTime), userId },
+  ] : [
+    { createTime: LessThan(createTime), isPublished: true },
+    { createTime: LessThan(createTime), userId },
+  ];
   const playgrounds = await PlaygroundRepo.find({
-    // where createTime < createTime AND (isPublished = true OR userId = userId)
-    where: draft ? [
-      { createTime: LessThan(createTime), userId },
-    ] : [
-      { createTime: LessThan(createTime), isPublished: true },
-      { createTime: LessThan(createTime), userId },
-    ],
+    where,
     order: { isPublished: "ASC", createTime: "DESC" },
     take: count,
   });
   const userIds = Array.from(new Set(playgrounds.map(p => p.userId)));
   const users = await UserRepo.find({ where: { id: In(userIds) } });
-  return playgrounds.map(p => ({
-    ...p,
-    user: users.find(u => u.id === p.userId),
-    target: undefined,
-    seed: undefined,
-  }));
+  const total = await PlaygroundRepo.count({ where });
+  return {
+    playgrounds: playgrounds.map(p => ({
+      ...p,
+      user: users.find(u => u.id === p.userId),
+      target: undefined,
+      seed: undefined,
+    })),
+    total,
+    hasMore: total > count,
+  };
 }
 
 router.get("/", async (req: Request, res: Response) => {
   const createTime = Number(req.query.createTime as string || Date.now());
-  const count = req.query.count ? parseInt(req.query.count as string) : 20;
-  render(res, "playground/index", req).title("WJU 游乐场").render({
-    playgrounds: await getPlaygrounds(req.session.user?.id || '', createTime, count),
+  const count = req.query.count ? parseInt(req.query.count as string) : 18;
+  const total = await PlaygroundRepo.count({ where: [
+      { createTime: LessThan(createTime), isPublished: true },
+      { createTime: LessThan(createTime), userId: req.session.user?.id || '' },
+    ], 
   });
+  render(res, "playground/index", req).title("WJU 游乐场").render(
+    await getPlaygrounds(req.session.user?.id || '', createTime, count));
 });
 
 router.get("/create", async (req: Request, res: Response) => {
@@ -47,15 +57,14 @@ router.get("/create", async (req: Request, res: Response) => {
 
 router.get("/draft", async (req: Request, res: Response) => {
   const createTime = Number(req.query.createTime as string || Date.now());
-  const count = req.query.count ? parseInt(req.query.count as string) : 20;
-  render(res, "playground/index", req).title("WJU 游乐场草稿").render({
-    playgrounds: await getPlaygrounds(req.session.user?.id || '', createTime, count, true),
-  });
+  const count = req.query.count ? parseInt(req.query.count as string) : 18;
+  render(res, "playground/index", req).title("WJU 游乐场草稿").render(
+    await getPlaygrounds(req.session.user?.id || '', createTime, count, true));
 });
 
 router.get("/list", async (req: Request, res: Response) => {
   const createTime = Number(req.query.createTime as string || Date.now());
-  const count = req.query.count ? parseInt(req.query.count as string) : 20;
+  const count = req.query.count ? parseInt(req.query.count as string) : 18;
   json(res, await getPlaygrounds(req.session.user?.id || '', createTime, count));
 });
 

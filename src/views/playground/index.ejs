@@ -33,6 +33,11 @@
         </div>
       </a>
 <% }); %>
+<% if (hasMore) { %>
+      <a href="?createTime=<%= playgrounds.length ? playgrounds[playgrounds.length - 1].createTime : '' %>" class="border border-current border-dashed rounded-lg h-[10em] flex items-center justify-center cursor-pointer">
+        更多谜题...
+      </a>
+<% } %>
     </section>
   </main>
 <%- include('../footer') %>
