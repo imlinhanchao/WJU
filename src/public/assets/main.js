@@ -253,12 +253,14 @@ Vue.createApp({
 
     const viewHistorys = ref([]);
     const viewId = ref(null);
-    function view(historys, target, id) {
+    const canPublishRecord = ref(false);
+    function view(historys, target, id, canPublish) {
       viewHistorys.value = historys.split(',').filter(s => s);
       if (target) {
         viewHistorys.value.push(target);
       }
       viewId.value = id;
+      canPublishRecord.value = canPublish;
     }
 
     function addItem(user) {

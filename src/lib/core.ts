@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { error, json, render } from '../utils/route';
-import { GameRepo, PlaygroundRepo, PlayRecordRepo, UserRepo } from '../entities';
+import { Game, GameRepo, PlaygroundRepo, PlayRecordRepo, UserRepo } from '../entities';
 import { srand, random, weightedRandom} from '../utils';
 import { And, MoreThan, Not } from 'typeorm';
 import { FingerTo } from 'fishpi';
@@ -208,7 +208,7 @@ export default class GameCore extends WJU {
       if (!userId) {
         return next();
       }
-      let currentGame: IGame | null = null;
+      let currentGame: Game | null = null;
       if (req.body.id) {
         currentGame = await GameRepo.findOneBy({ id: req.body.id, userId });
       } else {
@@ -227,19 +227,23 @@ export default class GameCore extends WJU {
         actions: [],
         difficulty: currentGame.difficulty,
         isPublished: true,
-        bestRecord: currentGame.history.length,
+        bestRecord: currentGame.current == currentGame.target ? currentGame.history.length : 0,
         isDaily: true,
       });
       playground.userId = userId;
-      const playgroundSaved = await PlaygroundRepo.save(PlaygroundRepo.create(playground))
-      const playRecord: PlayRecord = new PlayRecord(playgroundSaved);
-      playRecord.userId = userId;
-      playRecord.isDaily = true;
-      playRecord.playgroundId = playgroundSaved.id;
-      playRecord.history = currentGame.history;
-      playRecord.current = currentGame.current;
-      playRecord.steps = currentGame.history.length;
-      await PlayRecordRepo.save(PlayRecordRepo.create(playRecord));
+      const playgroundSaved = await PlaygroundRepo.save(PlaygroundRepo.create(playground));
+      if (currentGame.current == currentGame.target) {
+        const playRecord: PlayRecord = new PlayRecord(playgroundSaved);
+        playRecord.userId = userId;
+        playRecord.isDaily = true;
+        playRecord.playgroundId = playgroundSaved.id;
+        playRecord.history = currentGame.history;
+        playRecord.current = currentGame.current;
+        playRecord.steps = currentGame.history.length;
+        playRecord.createTime = currentGame.createTime;
+        playRecord.updatedTime = currentGame.updatedTime;
+        await PlayRecordRepo.save(PlayRecordRepo.create(playRecord));
+      }
       return json(res, playgroundSaved);
     } catch (err) {
       error(res, "创建失败: " + (err as Error).message);

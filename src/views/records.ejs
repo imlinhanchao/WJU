@@ -14,7 +14,7 @@
               <a 
                 href="javascript:void(0);" 
                 class="relative truncate border <%= record.target == record.current ? 'border-[var(--action-3-color)]' : 'border-dashed border-current' %> rounded-lg h-[10em] flex items-center justify-center cursor-pointer"
-                @click="view('<%=record.history.join(',')%>', '<%= record.target == record.current ? '✔' + record.target : ''%>', '<%= record.id %>')"
+                @click="view('<%=record.history.join(',')%>', '<%= record.target == record.current ? '✔' + record.target : ''%>', '<%= record.id %>', <%= record.target == record.current || record.createDate.split(' ')[0] != new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).split(' ')[0] %>)"
               >
                 <div class="text-center px-2 break-words truncate">
                   <div class="text-[3em] truncate <%= record.target == record.current ? 'text-action-3' : '' %>">
@@ -53,7 +53,7 @@
               <span v-if="index < viewHistorys.length - 1"> => </span>
             </span>
           </section>
-          <p class="text-right">
+          <p class="text-right" v-if="canPublishRecord">
             <button 
               @click="publishGame(viewId)" 
               class="font-bold py-2 px-4 rounded m-2 text space-x-1 !text-[var(--action-3-color)] inline-flex items-center justify-center">

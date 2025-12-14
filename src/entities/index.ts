@@ -13,7 +13,7 @@ import utils from '../utils'
 @EventSubscriber()
 export class EntitySubscriber implements EntitySubscriberInterface {
   beforeInsert(event: InsertEvent<any>): void {
-    if (event.entity) {
+    if (event.entity && !event.entity.createTime) {
       const timestamp = Date.now();
       if ('createTime' in event.entity) {
         event.entity.createTime = timestamp;
