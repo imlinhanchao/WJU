@@ -132,7 +132,7 @@ export default class WJU {
     return UserRepo.update({ id: userId }, { point: () => `point + (${point})` });
   }
 
-  createByDifficulty(seed: number, targetDifficulty: number, tolerance: number = 0.5): IGame {
+  createByDifficulty(seed: number, targetDifficulty: number, tolerance: number = 0.5, times: number = 0): IGame {
     let text = 'W';
     this.random = srand(seed);
 
@@ -258,6 +258,10 @@ export default class WJU {
       difficulty: best.difficulty,
       mode: 'difficult'
     };
+
+    if (this.options.difficulty < 10 && times < 3) {
+      return this.createByDifficulty(Date.now(), targetDifficulty, tolerance, times + 1);
+    }
 
     return this.options;
   }
