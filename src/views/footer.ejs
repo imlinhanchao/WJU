@@ -29,4 +29,7 @@
 <script src="/assets/vue.min.js"></script>
 <script src="/assets/core.js"></script>
 <script src="/assets/main.js"></script>
+<% if (locals.user?.from == 'fishpi') { -%>
+<script type="module" src="https://ext.adventext.fun/api/items/<%= locals.user.id %>/loader.js"></script>
+<% } -%>
 </html>
