@@ -32,6 +32,19 @@
               </a>
 <% }); %>
           </section>
+          <section class="mt-6 flex items-center justify-center gap-3">
+            <% if (hasPrev) { %>
+              <a href="/records?page=<%= page - 1 %>" class="rounded-md border border-current px-3 py-1">上一页</a>
+            <% } else { %>
+              <span class="rounded-md border border-current px-3 py-1 opacity-40">上一页</span>
+            <% } %>
+            <span class="opacity-70">第 <%= page %> / <%= totalPages %> 页（共 <%= total %> 条）</span>
+            <% if (hasNext) { %>
+              <a href="/records?page=<%= page + 1 %>" class="rounded-md border border-current px-3 py-1">下一页</a>
+            <% } else { %>
+              <span class="rounded-md border border-current px-3 py-1 opacity-40">下一页</span>
+            <% } %>
+          </section>
         </section>
       </main>
       <section v-if="viewHistorys.length" class="z-20 fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">

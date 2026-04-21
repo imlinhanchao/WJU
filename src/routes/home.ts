@@ -31,15 +31,28 @@ router.get("/records", async (req: Request, res: Response) => {
   if (!userId) {
     return res.redirect("/login?redirect=/records");
   }
+  const pageSize = 20;
+  const rawPage = Number(req.query.page as string) || 1;
+  const page = Math.max(1, Math.floor(rawPage));
+  const total = await GameRepo.count({ where: { userId } });
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const currentPage = Math.min(page, totalPages);
   const records = await GameRepo.find({
     where: { userId },
     order: { createTime: "DESC" },
-    take: 100,
+    take: pageSize,
+    skip: (currentPage - 1) * pageSize,
   });
   return render(res, "records", req).title(`游戏记录`).render({ records: records.map(r => ({
     ...r,
     createDate: new Date(Number(r.createTime)).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-  })) });
+  })),
+    page: currentPage,
+    total,
+    totalPages,
+    hasPrev: currentPage > 1,
+    hasNext: currentPage < totalPages,
+  });
 });
 router.use("/playground", PlayRouter);
 router.use("/bag", BagRouter);
