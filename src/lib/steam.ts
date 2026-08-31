@@ -18,6 +18,12 @@ export async function login(req: Request, res: Response) {
         isAdmin: false,
       };
       await saveUser(req.session.user);
+      
+      if (req.session.redirect) {
+        const redirectUrl = req.session.redirect;
+        delete req.session.redirect;
+        return res.redirect(redirectUrl);
+      }
       return res.redirect("/");
     } else {
       req.session.error = "登录验证失败，请重试";

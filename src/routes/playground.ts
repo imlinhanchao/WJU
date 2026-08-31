@@ -70,7 +70,8 @@ router.get("/list", async (req: Request, res: Response) => {
 
 router.use("/game", (req: Request, res: Response, next) => {
     if (!req.session.user) {
-      return error(res, "请先登录");
+      req.session.redirect = req.originalUrl;
+      return res.redirect("/login");
     }
     next();
 });

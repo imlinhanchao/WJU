@@ -5,6 +5,7 @@ import { Playground } from '@/entities/Playground';
 declare module 'express-session' {
   interface SessionData {
     user?: User;
+    redirect?: string;
     error?: string;
   }
 }
