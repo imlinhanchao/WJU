@@ -376,4 +376,31 @@ router.get("/game/:id/rank", async (req: Request, res: Response, next) => {
   }
 });
 
+// Return a single play record's history (only playground owner can access)
+router.get("/game/:id/records/:uid", async (req: Request, res: Response, next) => {
+  try {
+    if (!req.playground) {
+      return next();
+    }
+    // only playground owner can view arbitrary users' record histories
+    if (req.playground.userId !== req.session.user?.id.toString()) {
+      return error(res, "无权限操作");
+    }
+    const uid = req.params.uid as string;
+    const records = await PlayRecordRepo.find({ where: { playgroundId: req.playground.id, userId: uid } as any, order: { createTime: 'DESC' } });
+    json(res, {
+      records: records.map(r => ({ 
+        id: r.id, 
+        history: r.history || [], 
+        target: r.current === r.target ? r.target : undefined, 
+        steps: r.steps,
+        current: r.current, 
+        createTime: r.createTime,
+      }))
+    });
+  } catch (err) {
+    error(res, "加载失败: " + (err as Error).message);
+  }
+});
+
 export default router;

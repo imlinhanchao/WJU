@@ -13,6 +13,9 @@
                 <th class="th_name">用户名</th>
                 <th class="th_stage">步数</th>
                 <th class="th_date">耗时</th>
+                <% if (locals.user && locals.playground && locals.user.id.toString() === locals.playground.userId) { %>
+                <th class="th_view">查看</th>
+                <% } %>
               </tr>
             </thead>
             <tbody>
@@ -33,6 +36,11 @@
                 </td>
                 <td class="p-2"><%= ranks[i].steps %></td>
                 <td class="p-2"><%= ranks[i].cost %></td>
+                <% if (locals.user && locals.playground && locals.user.id.toString() === locals.playground.userId) { %>
+                <td class="p-2">
+                  <button class="rounded-md border px-2 py-1" data-user-id="<%= ranks[i].userId %>" data-playground-id="<%= playground.id %>" onclick="openRankHistory(this)">查看</button>
+                </td>
+                <% } %>
               </tr>
 <% } -%>
             </tbody>
@@ -41,4 +49,56 @@
       </main>
     </section>
   </section>
+  <section id="rank-history-modal" style="display:none" class="z-20 fixed left-[1em] right-[1em] top-[1em] bottom-[1em] flex items-center justify-center">
+    <section class="flex flex-col p-5 bg-primary bg-opacity-90 rounded-lg shadow-light-100 dark:shadow-dark-100 shadow-lg max-w-[500px] w-full max-h-[95vh] space-y-2">
+      <h2 class="text-lg font-bold text-center relative pb-5">
+        <span class="font-bold text-lg">通关步骤</span>
+        <button class="absolute right-0 close-btn">X</button>
+      </h2>
+      <section class="flex items-center gap-2">
+        <label style="display:none" for="history-select">选择:</label>
+        <select class="history-select rounded-md px-2 py-1" style="display:none"></select>
+      </section>
+      <section class="flex flex-wrap justify-start items-center gap-1 history-container flex-1 overflow-auto"></section>
+    </section>
+  </section>
+  <script>
+    function openRankHistory(btn) {
+      const pid = btn.dataset.playgroundId;
+      const uid = btn.dataset.userId;
+      if (!pid || !uid) return alert('参数错误');
+      fetch(`/playground/game/${pid}/records/${uid}`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.code != 0) return alert(res.message);
+          const data = res.data;
+          const records = data.records || [];
+          const histories = records.map(r => r.history || []);
+          const modal = document.getElementById('rank-history-modal');
+          const container = modal.querySelector('.history-container');
+          const select = modal.querySelector('select.history-select');
+          if (histories.length > 1) {
+            select.innerHTML = histories.map((h, i) => `<option value="${i}">${records[i].history.length}步 (${new Date(Number(records[i].createTime)).toLocaleString()})</option>`).join('');
+            select.style.display = '';
+          } else {
+            select.style.display = 'none';
+          }
+          function renderHist(index) {
+            const h = histories[index] || [];
+            container.innerHTML = h.map((act, idx) => 
+              `<span class="text-sm px-2 py-1 bg-gray-500 bg-opacity-50 rounded-md">${act}</span>${idx < h.length - 1 ? ' => ' : ''}`
+            ).join('') + (records[index].target ? ` => <span class="text-sm px-2 py-1 bg-action-3 bg-opacity-50 rounded-md">${records[index].target}</span>` : '');
+          }
+          renderHist(0);
+          select.onchange = function () { renderHist(this.value); };
+          modal.style.display = 'flex';
+        })
+        .catch(e => alert('加载失败: ' + e.message));
+    }
+    document.addEventListener('click', function (e) {
+      if (e.target.matches('#rank-history-modal .close-btn')) {
+        document.getElementById('rank-history-modal').style.display = 'none';
+      }
+    });
+  </script>
 <%- include('../footer') %>
