@@ -23,14 +23,24 @@ import { Playground } from './Playground';
     .from(PlayRecord, 'p')
     .innerJoin(
       qb => qb
-        .select('pr.userId', 'userId')
-        .addSelect('pr.playgroundId', 'playgroundId')
-        .addSelect('MIN(pr.steps)', 'minSteps')
-        .addSelect('MIN(CASE WHEN pr.steps = MIN(pr.steps) OVER (PARTITION BY pr.userId, pr.playgroundId) THEN pr.createTime ELSE NULL END)', 'minCreateTime')
-        .from(PlayRecord, 'pr')
+        .select('t.userId', 'userId')
+        .addSelect('t.playgroundId', 'playgroundId')
+        .addSelect('t.minSteps', 'minSteps')
+        .addSelect('MIN(pr.createTime)', 'minCreateTime')
+        .from(subQb => subQb
+          .select('pr.userId', 'userId')
+          .addSelect('pr.playgroundId', 'playgroundId')
+          .addSelect('MIN(pr.steps)', 'minSteps')
+          .from(PlayRecord, 'pr')
+          .where('pr.current = pr.target')
+          .groupBy('pr.userId')
+          .addGroupBy('pr.playgroundId'),
+          't')
+        .innerJoin(PlayRecord, 'pr', 'pr.userId = t.userId AND pr.playgroundId = t.playgroundId AND pr.steps = t.minSteps')
         .where('pr.current = pr.target')
-        .groupBy('pr.userId')
-        .addGroupBy('pr.playgroundId'),
+        .groupBy('t.userId')
+        .addGroupBy('t.playgroundId')
+        .addGroupBy('t.minSteps'),
       'm',
       'm.userId = p.userId AND m.playgroundId = p.playgroundId AND p.steps = m.minSteps AND p.createTime = m.minCreateTime AND p.current = p.target'
     )
