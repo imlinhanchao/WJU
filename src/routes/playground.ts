@@ -345,11 +345,21 @@ router.get("/game/:id/rank", async (req: Request, res: Response, next) => {
     ],
       order: { steps: "ASC", cost: "ASC" },
     });
-    const userIds = Array.from(new Set(ranks.map(p => p.userId)));
+
+    // For each user keep only the record with minimal steps; if tie, keep the earliest createTime
+    ranks.sort((a, b) => (a.steps - b.steps) || (Number(a.createTime) - Number(b.createTime)));
+    const deduped: Record<string, typeof ranks[number]> = {};
+    for (const r of ranks) {
+      if (!deduped[r.userId]) {
+        deduped[r.userId] = r;
+      }
+    }
+    const finalRanks = Object.values(deduped);
+    const userIds = Array.from(new Set(finalRanks.map(p => p.userId)));
     const users = await UserRepo.find({ where: { id: In(userIds) } });
     render(res, "playground/rank", req).title("Playground 排行榜").render({
       playground: req.playground,
-      ranks: ranks.map(r => ({
+      ranks: finalRanks.map(r => ({
         ...r,
         cost: shortTime(Number(r.cost)),
         user: users.find(u => u.id === r.userId),

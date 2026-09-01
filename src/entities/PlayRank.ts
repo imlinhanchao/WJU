@@ -26,12 +26,13 @@ import { Playground } from './Playground';
         .select('pr.userId', 'userId')
         .addSelect('pr.playgroundId', 'playgroundId')
         .addSelect('MIN(pr.steps)', 'minSteps')
+        .addSelect('MIN(CASE WHEN pr.steps = MIN(pr.steps) OVER (PARTITION BY pr.userId, pr.playgroundId) THEN pr.createTime ELSE NULL END)', 'minCreateTime')
         .from(PlayRecord, 'pr')
         .where('pr.current = pr.target')
         .groupBy('pr.userId')
         .addGroupBy('pr.playgroundId'),
       'm',
-      'm.userId = p.userId AND m.playgroundId = p.playgroundId AND p.steps = m.minSteps AND p.current = p.target'
+      'm.userId = p.userId AND m.playgroundId = p.playgroundId AND p.steps = m.minSteps AND p.createTime = m.minCreateTime AND p.current = p.target'
     )
 })
 
