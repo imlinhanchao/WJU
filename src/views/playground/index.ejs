@@ -19,15 +19,15 @@
 <% } %>     </span>
             <span>
 <% if (playground.isPublished) { %>
-              <svg width="1.5em" height="1.5em" class="inline-block">
-                <use xlink:href="#icon-<%= {
-                  fishpi: 'fishpi',
-                  github: 'github',
-                  steam: 'steam'
-                }[playground.user.from] %>"></use>
-              </svg>
+                <svg width="1.5em" height="1.5em" class="inline-block">
+                  <use xlink:href="#icon-<%= {
+                    fishpi: 'fishpi',
+                    github: 'github',
+                    steam: 'steam'
+                  }[playground.user.from] %>"></use>
+                </svg>
 <% } %>
-              <%= playground.isPublished ? playground.user.username : '[草稿]' %>
+                <%= playground.isPublished ? playground.user.username : '[草稿]' %>
             </span>
           </div>
         </div>

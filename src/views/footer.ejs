@@ -2,18 +2,22 @@
 <% if (!['config', 'register', 'login'].includes(locals.name)){ -%>
       <div id="userinfo" class="space-x-2">
 <% if(!locals.user){ -%>
-          <a href="/login" id="login">登录</a>
-<% }else{ -%>
-          @<a title="个人资料" href="/u/<%= user.from %>/<%= user.username %>"><%= user.nickname || user.username %></a>
-<% } -%>
+        <a href="/login" id="login">登录</a>
         <span>|</span>
-<% if(locals.name !== 'playground/game'){ -%>
+<% } else if (locals.name !== 'playground/game') { -%>
+        @<a title="个人资料" href="/u/<%= user.from %>/<%= user.username %>"><%= user.nickname || user.username %></a>
+        <span>|</span>
+<% } -%>
+<% if(locals.name !== 'playground/game') { -%>
         <a href="/rank">排行榜</a>
         <span>|</span>
         <a href="/playground">游乐场</a>
         <span>|</span>
         <a href="/difficult">困难模式</a>
 <% } else if(locals.playground?.id) {-%>
+        @<a title="作者" href="/playground/<%= user.from %>/<%= user.username %>">
+        <%= user.nickname || user.username %></a>
+        <span>|</span>
         <a href="/playground/game/<%=locals.playground?.id-%>/records">历史记录</a>
         <span>|</span>
         <a href="/playground/game/<%=locals.playground?.id-%>/rank">排行榜</a> 

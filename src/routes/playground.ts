@@ -403,4 +403,27 @@ router.get("/game/:id/records/:uid", async (req: Request, res: Response, next) =
   }
 });
 
+// List published playgrounds for a user by username
+router.get("/:from/:user", async (req: Request, res: Response, next) => {
+  try {
+    const from = req.params.from;
+    const username = req.params.user;
+    // try find user by username
+    const user = await UserRepo.findOne({ where: { username, from } });
+    if (!user) {
+      return error(res, "用户不存在");
+    }
+    const playgrounds = await PlaygroundRepo.find({ where: { userId: user.id, isPublished: true }, order: { createTime: 'DESC' } });
+    const users = await UserRepo.find({ where: { id: In(playgrounds.map(p => p.userId)) } });
+    render(res, "playground/index", req).title(`${user.nickname || user.username} 的游乐场`).render({
+      playgrounds: playgrounds.map(p => ({ ...p, user: users.find(u => u.id === p.userId), target: undefined, seed: undefined })),
+      total: playgrounds.length,
+      hasMore: false,
+    });
+  } catch (err) {
+    render(res, "playground/index", req).title("游乐场").render({ playgrounds: [], total: 0, hasMore: false, error: "加载失败: " + (err as Error).message });
+  }
+});
+
 export default router;
+

@@ -2,6 +2,7 @@
       <main class="flex-1 flex flex-col justify-center items-center relative">
         <h2 class="text-3xl">
           <span class="font-bold">@<%= profile.nickname || profile.username %></span>
+          <a class="ml-3 text-sm text-[var(--disabled-bg-color)]" href="/playground/<%= profile.from %>/<%= profile.username %>">游乐场</a>
         </h2>
         <span v-if="error" class="error">{{ error }}</span>
         <section class="grid grid-cols-3">
