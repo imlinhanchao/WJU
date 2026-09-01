@@ -355,6 +355,8 @@ router.get("/game/:id/rank", async (req: Request, res: Response, next) => {
       }
     }
     const finalRanks = Object.values(deduped);
+    // Final leaderboard: sort by steps desc, then cost desc
+    finalRanks.sort((a, b) => (b.steps - a.steps) || (Number(b.cost) - Number(a.cost)));
     const userIds = Array.from(new Set(finalRanks.map(p => p.userId)));
     const users = await UserRepo.find({ where: { id: In(userIds) } });
     render(res, "playground/rank", req).title("Playground 排行榜").render({
