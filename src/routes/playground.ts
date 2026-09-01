@@ -215,12 +215,14 @@ router.get("/game/:id", async (req: Request, res: Response, next) => {
     }
     let playRecord = await getLastRecord(req.session.user!.id, req.playground.id);
     let bestRecord = await getBestRecord(req.session.user!.id, req.playground);
+    let author = await UserRepo.findOne({ where: { id: req.playground.userId } });
 
     render(res, "playground/game", req).title(`游乐场 - ${req.playground.source}`).render({
       playground: {
         id: req.playground.id,
         source: req.playground.source,
         actions: [],
+        author,
       },
       playRecord: playRecord ? {
         current: playRecord.current,

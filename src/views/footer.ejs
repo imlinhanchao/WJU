@@ -15,8 +15,8 @@
         <span>|</span>
         <a href="/difficult">困难模式</a>
 <% } else if(locals.playground?.id) {-%>
-        @<a title="作者" href="/playground/<%= user.from %>/<%= user.username %>">
-        <%= user.nickname || user.username %></a>
+        @<a title="作者" href="/playground/<%= locals.playground.author.from %>/<%= locals.playground.author.username %>">
+        <%= locals.playground.author.nickname || locals.playground.author.username %></a>
         <span>|</span>
         <a href="/playground/game/<%=locals.playground?.id-%>/records">历史记录</a>
         <span>|</span>
